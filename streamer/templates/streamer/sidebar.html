@@ -1,0 +1,163 @@
+<style type="text/css">
+    #sidebar {
+        color: #ededed;
+    }
+
+    .sidebar-header {
+        background-color: #6a6a6a;
+        padding: 10px;
+        border-top-left-radius: 5px;
+    }
+
+    .sidebar-header > h2 {
+        margin: 0px;
+    }
+
+    .sidebar-guide {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        background-color: #272727;
+    }
+
+    .sidebar-guide-item {
+        height: 30px;
+        border-top: 1px solid #323232;
+        border-bottom: 1px solid #1b1b1b;
+        padding: 4px 0px;
+        color: #9999;
+        background-image: linear-gradient(to bottom,#292929 0,#252525 100%);
+        cursor: pointer;
+    }
+
+    .sidebar-guide-item.selected {
+        border-right: 4px solid;
+        border-right-color: #c4302b;
+        background: #1c1c1c;
+        color: #999;
+    }
+
+    .sidebar-guide-item.selected:hover {
+        border-right-color: #c4302b;
+    }
+
+    .sidebar-guide-item:hover {
+        border-right: 4px solid #999;
+        color: #999;
+        background: #1c1c1c;
+    }
+
+    .sidebar-guide-item > a:hover {
+        color: inherit;
+    }
+
+    .sidebar-guide-item > a {
+        display: block;
+        min-height: 28px;
+        line-height: 28px;
+        padding: 0 5px 0 10px;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .sidebar-guide-item-icon {
+        margin-right: 5px;
+        font-size: 26px;
+        color: inherit;
+    }
+
+    .sidebar-guide-item-icon:hover {
+        color: inherit;
+    }
+
+    .btn-dark {
+        color: #fff;
+        background-color: #454545;
+        border-color: #333 #333 #000;
+        text-shadow: 0 1px 0 rgba(0,0,0,.45);
+        outline: 0;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
+        background-image: linear-gradient(to bottom,#474747 0,#2b2b2b 100%);
+    }
+
+    .btn-blue {
+        color: #fff;
+        background-color: #6891e7;
+        border-color: #304ea6 #304ea6 #000;
+        text-shadow: 0 1px 0 rgba(0,0,0,.45);
+        -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
+        -ms-box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
+        -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
+        filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#6891e7,EndColorStr=#304ea6);
+        background-image: -moz-linear-gradient(top,#6891e7 0,#304ea6 100%);
+        background-image: -ms-linear-gradient(top,#6891e7 0,#304ea6 100%);
+        background-image: -o-linear-gradient(top,#6891e7 0,#304ea6 100%);
+        background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#6891e7),color-stop(100%,#304ea6));
+        background-image: -webkit-linear-gradient(top,#6891e7 0,#304ea6 100%);
+        background-image: linear-gradient(to bottom,#6891e7 0,#304ea6 100%);
+    }
+
+    .btn {
+        height: 2.95em;
+        padding: 0 .91em;
+        border: 1px solid;
+        outline: 0;
+        font-weight: bold;
+        font-size: 11px;
+        white-space: nowrap;
+        word-wrap: normal;
+        vertical-align: middle;
+        cursor: pointer;
+        overflow: visible;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+        border-radius: 3px;
+    }
+
+    .btn-sidebar-header {
+        display: block;
+        width: 100%;
+        margin-top: 5px;
+        line-height: 17px;
+        font-size: 13px;
+        border: 0px;
+    }
+
+
+</style>
+
+<nav id="sidebar">
+	<div class="sidebar-header">
+		<h2>Sign in to add channels to your homepage</h2>
+        <div>
+            <button class="btn btn-dark btn-sidebar-header">Sign In</button>
+        </div>
+        <div>
+            <button class="btn btn-blue btn-sidebar-header">Create Account</button>
+        </div>
+    </div>
+
+    <ul class="sidebar-guide">
+        {% for cat in categories %}
+        <li id="{{ cat.name }}" class="sidebar-guide-item">
+            <a href="/?c={{ cat.name }}"><div style="display: flex; align-items: center;"><div><i class="fas fa-user sidebar-guide-item-icon"></i></div><div>{{ cat.title }}</div></div></a>
+        </li>
+        {% endfor %}
+    </ul>
+</nav>
+
+<script type="text/javascript">
+
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    };
+
+    $(document).ready(function () {
+        $('.sidebar-guide').children().removeClass('selected');
+        $('#' + getUrlParameter('c')).toggleClass('selected');
+    });
+</script>

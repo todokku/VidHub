@@ -1,0 +1,14 @@
+{% extends 'streamer/base.html' %}
+
+{% block main_content %}
+
+{% include 'streamer/navbar.html' %}
+
+  <h2>Login</h2>
+  <form method="post">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button type="submit">Login</button>
+  </form>
+  
+{% endblock main_content %}

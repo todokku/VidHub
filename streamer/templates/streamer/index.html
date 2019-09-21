@@ -1,0 +1,202 @@
+{% extends 'streamer/base.html' %}
+
+{% block head %}
+<title>VidHub index</title>
+{% endblock head %}
+
+
+{% block main_content %}
+
+{% include 'streamer/navbar.html' %}
+
+{% include 'streamer/sidebar.html' %}
+
+<style type="text/css">
+
+	#feed-header {
+		overflow: hidden;
+	    padding: 8px;
+	    min-height: 36px;
+	    background: #2b2b2b;
+	    -moz-border-radius-topright: 5px;
+	    -webkit-border-top-right-radius: 5px;
+	    border-top-right-radius: 5px;
+	    background-image: -moz-linear-gradient(top,#333333 0,#262626 100%);
+	    background-image: -ms-linear-gradient(top,#333333 0,#262626 100%);
+	    background-image: -o-linear-gradient(top,#333333 0,#262626 100%);
+	    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#333333),color-stop(100%,#262626));
+	    background-image: -webkit-linear-gradient(top,#333333 0,#262626 100%);
+	    background-image: linear-gradient(to bottom,#333333 0,#262626 100%);
+	    color: #fff;
+	}
+
+	#feed-header h2 {
+		font-size: 15px;
+	    line-height: 34px;
+	    margin: 0;
+	}
+
+	#feed-main {
+		background: white;
+	}
+
+	#feed-main > ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.feed-item-container {
+		border-bottom: 1px solid #ededed;
+		height: 112px;
+	}
+
+	.feed-item-outer {
+		padding: 15px;
+	    padding-bottom: 5px;
+	    margin: 0;
+	}
+
+	.feed-item-main {
+		display: grid;
+		grid-template-columns: 1fr 3fr 1fr;
+	}
+
+	.feed-item-main h4 {
+		margin: 0;
+	    color: #333;
+	    font-size: 15px;
+	    line-height: 1.2em;
+	    max-height: 2.4em;
+	    overflow: hidden;
+	}
+
+	.feed-item-main a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.feed-item-thumb {
+		height: 59px;
+	}
+
+	.feed-item-thumb > a > img {
+		height: 59px;
+	}
+
+	.feed-item-content {
+		padding-left: 10px;
+	}
+
+	.feed-item-time {
+		color: #999;
+		line-height: 15px;
+		font-size: 9px;
+		justify-self: end;
+	}
+
+
+	#recommended-videos > ul {
+		list-style: none;
+		padding: 0;
+	}
+
+	.recommended-item-thumb {
+		height: 59px;
+	}
+
+	.recommended-item-thumb > a > img {
+		height: 59px;
+	}
+
+	.recommended-item-main {
+		display: grid;
+		grid-template-columns: 1fr 3fr 1fr;
+	}
+</style>
+
+<div id='feed'>
+	<div id='feed-header'>
+		<h2>From VidHub<h2>
+	</div>
+	<div id='feed-main'>
+		{% if videos %}
+			<ul>
+			{% for video in videos %}
+				<li>
+					<div class="feed-item-container">
+						<div class="feed-item-outer">
+							<div class="feed-item-main">
+								<div class="feed-item-thumb">
+									<a href="watch/{{ video.watch_id }}">
+										<img src="{{ video.thumbnail.url }}">
+									</a>
+								</div>
+								<div class="feed-item-content">
+									<h4><a href="watch/{{ video.watch_id }}">{{ video.title }}</a></h4>
+									<div>{{ video.description }}</div>
+									<div class="feed-item-views">
+										{{ video.view_count }} views
+									</div>
+									<div class="feed-item-channel">
+										<a href="">
+											{{ video.channel.name }} uploaded
+										</a>
+									</div>
+								</div>
+								<div class="feed-item-time">
+									{{ video.uploaded }}
+								</div>
+							</div>
+						</div>
+					</div>
+				</li>
+			{% endfor %}
+			</ul>
+		{% else %}
+			<p>Wow! Such empty!</p>
+		{% endif %}
+	</div>
+</div>
+<div id='recommended-videos'>
+	{% if videos %}
+		<ul>
+		{% for video in videos %}
+			<li>
+				<div class="recommended-item-container">
+					<div class="recommended-item-outer">
+						<div class="recommended-item-main">
+							<div class="recommended-item-thumb">
+								<a href="watch/{{ video.watch_id }}">
+									<img src="{{ video.thumbnail.url }}">
+								</a>
+							</div>
+							<div class="recommended-item-content">
+								<h4><a href="watch/{{ video.watch_id }}">{{ video.title }}</a></h4>
+								<div>{{ video.description }}</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</li>
+		{% endfor %}
+		</ul>
+	{% else %}
+		<p>Wow! Such empty!</p>
+	{% endif %}
+</div>
+
+
+<script type="text/javascript">
+
+	function getUrlParameter(name) {
+	    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+	    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+	    var results = regex.exec(location.search);
+	    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+	};
+
+	$(document).ready(console.log(getUrlParameter('c')));
+</script>
+
+{% endblock main_content %}

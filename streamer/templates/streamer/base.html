@@ -1,0 +1,46 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" type="text/css" href="{% static "css/normalize.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "css/all.css" %}">
+
+    {% block head %}
+	    <title>Hello, world!</title>
+    {% endblock head %}
+
+  </head>
+
+  <style type="text/css">
+
+    body {
+      box-sizing: border-box;
+      font: 12px arial,sans-serif;
+      margin-top: 10px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      max-width: 970px;
+      margin: 0 auto;
+    }
+  </style>
+
+  <script src="{% static "js/jquery-3.4.1.min.js" %}"></script>
+  
+  <body style="background-color: #ebebeb;">
+    <div class="container">
+	    {% block main_content %}
+	    {% endblock main_content %}
+	</div>
+
+    <!-- <script src="{% static "js/jquery-3.4.1.min.js" %}"></script> -->
+
+    {% block javascript %}
+    {% endblock javascript %}
+  </body>
+</html>

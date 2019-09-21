@@ -1,0 +1,15 @@
+{% extends 'streamer/base.html' %}
+
+{% block main_content %}
+
+{% include 'streamer/navbar.html' %}
+<h1>{{ channel.name }}</h1>
+<ul>
+	{% for video in videos %}
+	<li>
+		<a href="/watch/{{ video.watch_id }}">{{ video.title }}</a>
+	</li>
+	{% endfor %}
+</ul>
+
+{% endblock main_content %}

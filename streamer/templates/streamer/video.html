@@ -1,0 +1,37 @@
+{% extends 'streamer/base.html' %}
+{% load static %}
+
+{% block head %}
+
+<title>{{ video.title }} - VidHub</title>
+<link href="{% static 'css/video-js.css' %}" rel="stylesheet">
+<link href="{% static 'css/videojs-resolution-switcher.css' %}" rel="stylesheet">
+<script src="{% static 'js/video.js' %}"></script>
+<script src="{% static 'js/videojs-resolution-switcher.js' %}"></script>
+
+<style type="text/css">
+	.vjs-control .vjs-button {
+		width: auto;
+		height: auto;
+	}
+</style>
+
+{% endblock head %}
+
+
+{% block main_content %}
+
+{% include 'streamer/navbar.html' %}
+
+<video id="video" class="video-js vjs-default-skin" controls preload="none" width="640" height="264" poster="{{ video.thumbnail.url }}" data-setup="{}">
+{% for format in formats %}
+	<source src="{{ MEDIA_URL }}{{ format.file }}" type="video/{{ format.codec }}" label="{{ format.label }}">
+{% endfor %}
+<p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+</video>
+
+<script>
+  videojs('#video').videoJsResolutionSwitcher()
+</script>
+
+{% endblock main_content %}
