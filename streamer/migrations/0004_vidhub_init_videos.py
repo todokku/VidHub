@@ -17,7 +17,7 @@ def init_categories(apps, schema_editor):
 	for n in range(1, 10):
 		title = 'Dummy Video #{}'.format(n)
 		description = 'Dummy video description.'
-		status = 'published'
+		status = 'public'
 		file = settings.MEDIA_ROOT + '/dummyvideo.mp4'
 		category = list(Category.objects.order_by('?'))[0]
 		channel = list(Channel.objects.order_by('?'))[0]
