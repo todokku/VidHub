@@ -5,7 +5,11 @@
 
     .sidebar-header {
         background-color: #6a6a6a;
-        padding: 10px;
+        {% if user.is_authenticated %}
+            padding: 4px 10px;
+        {% else %}
+            padding: 10px;
+        {% endif %}
         border-top-left-radius: 5px;
     }
 
@@ -124,19 +128,58 @@
         border: 0px;
     }
 
+    .sidebar-profile {
+        display: flex;
+        background-color: #333;
+    }
+
+    .sidebar-profile-avatar {
+        padding: 10px;
+    }
+
+    .sidebar-profile-avatar > img {
+        border-radius: 5px;
+    }
+
+    .sidebar-profile-items {
+        list-style: none;
+        padding-left: 0px;
+        color: #999;
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
 
 </style>
 
 <nav id="sidebar">
-	<div class="sidebar-header">
-		<h2>Sign in to add channels to your homepage</h2>
-        <div>
-            <button class="btn btn-dark btn-sidebar-header">Sign In</button>
+    {% if user.is_authenticated %}
+        <div class="sidebar-header">
+            <div><button class="btn btn-blue btn-sidebar-header">Browse channels</button></div>
         </div>
-        <div>
-            <button class="btn btn-blue btn-sidebar-header">Create Account</button>
+        <div class="sidebar-profile">
+            <div class="sidebar-profile-avatar">
+                <img src="https://dummyimage.com/96x96/aaaaaa/f00.png&text=AVATAR">
+            </div>
+            <ul class="sidebar-profile-items">
+                <li>My Channel</li>
+                <li>Videos</li>
+                <li>Likes</li>
+                <li>History</li>
+                <li>Watch Later</li>
+            </ul>
         </div>
-    </div>
+    {% else %}
+    	<div class="sidebar-header">
+    		<h2>Sign in to add channels to your homepage</h2>
+            <div>
+                <button class="btn btn-dark btn-sidebar-header">Sign In</button>
+            </div>
+            <div>
+                <button class="btn btn-blue btn-sidebar-header">Create Account</button>
+            </div>
+        </div>
+    {% endif %}
 
     <ul class="sidebar-guide">
         {% for cat in categories %}
