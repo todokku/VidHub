@@ -12,6 +12,7 @@ from video_encoding import tasks
 
 from .models import Video
 from .models import Profile
+from .models import Channel
 
 @receiver(post_save, sender=Video)
 def convert_video(sender, instance, created, **kwargs):
@@ -22,19 +23,25 @@ def convert_video(sender, instance, created, **kwargs):
 				instance.pk)
 
 
-def generate_watch_id():
+def generate_id(length):
 	chars = string.ascii_letters + string.digits
-	length = 8
 	return ''.join(random.choice(chars) for _ in range(length))
 
 @receiver(pre_save, sender=Video)
 def pre_save_create_watch_id(sender, instance, **kwargs):
 	if not instance.watch_id:
-		new_watch_id = generate_watch_id()
+		new_watch_id = generate_id(8)
 		while sender.objects.filter(watch_id=new_watch_id).exists():
-			new_watch_id = generate_watch_id()
+			new_watch_id = generate_id(8)
 		instance.watch_id = new_watch_id
 
+@receiver(pre_save, sender=Channel)
+def pre_save_create_channel_id(sender, instance, **kwargs):
+	if not instance.channel_id:
+		new_channel_id = generate_id(8)
+		while sender.objects.filter(channel_id=new_channel_id).exists():
+			new_channel_id = generate_id(8)
+		instance.channel_id = new_channel_id
 
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):

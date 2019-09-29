@@ -13,6 +13,7 @@ class Profile(models.Model):
 class Channel(models.Model):
 	name = models.CharField(max_length=100)
 	owner = models.OneToOneField(User, on_delete=models.CASCADE)
+	channel_id = models.CharField(max_length=10, blank=True)
 
 	def __str__(self):
 		return self.name

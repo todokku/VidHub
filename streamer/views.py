@@ -22,6 +22,8 @@ def index(request):
 		videos = Video.objects.all()
 	categories = Category.objects.all()
 	context = { 'videos' : videos, 'categories' : categories }
+	if request.user.is_authenticated:
+		context['channel'] = Channel.objects.get(owner__exact=request.user)
 	return render(request, 'streamer/index.html', context)
 
 def video(request, watch_id):
@@ -107,7 +109,7 @@ def signup(request):
 		form = SignUpForm()
 	return render(request, 'streamer/signup.html', {'form' : form})
 
-def channel(request, channel_name):
-	channel = Channel.objects.get(name__exact=channel_name)
+def channel(request, channel_id):
+	channel = Channel.objects.get(channel_id__exact=channel_id)
 	videos = Video.objects.filter(channel__exact=channel)
 	return render(request, 'streamer/channel.html', {'channel' : channel, 'videos' : videos})
