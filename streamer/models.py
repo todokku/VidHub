@@ -64,7 +64,7 @@ class Video(models.Model):
 
 class Playlist(models.Model):
 	title = models.CharField(max_length=100)
-	channel = models.OneToOneField(Channel, on_delete=models.CASCADE)
+	owner = models.OneToOneField(Channel, on_delete=models.CASCADE)
 
 	def __str__(self):
 		return self.title

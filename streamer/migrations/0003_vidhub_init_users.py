@@ -11,6 +11,7 @@ def init_users(apps, schema_editor):
 	User = apps.get_model('auth', 'User')
 	Channel = apps.get_model('streamer', 'Channel')
 	Profile = apps.get_model('streamer', 'Profile')
+	Playlist = apps.get_model('streamer', 'Playlist')
 	data = [
 		('john', 'John'),
 		('bob', 'Bob'),
@@ -27,6 +28,7 @@ def init_users(apps, schema_editor):
 				new_channel_id = generate_id(8)
 			channel.channel_id = new_channel_id
 		channel.save()
+		Playlist.objects.create(owner=channel, title='History')
 
 def generate_id(length):
 	chars = string.ascii_letters + string.digits

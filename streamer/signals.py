@@ -13,6 +13,7 @@ from video_encoding import tasks
 from .models import Video
 from .models import Profile
 from .models import Channel
+from .models import Playlist
 
 @receiver(post_save, sender=Video)
 def convert_video(sender, instance, created, **kwargs):
@@ -47,4 +48,5 @@ def pre_save_create_channel_id(sender, instance, **kwargs):
 def update_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+        Playlist.objects.create(owner=instance, title='History')
     instance.profile.save()

@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from video_encoding.backends.ffmpeg import FFmpegBackend
 
 from .models import Video, Channel, Category
-from .forms import VideoForm, EditVideoForm, SignUpForm
+from .forms import VideoForm, EditVideoForm, SignUpForm, LoginForm
 
 def index(request):
 	search=request.GET.get('q', None)
@@ -91,6 +91,20 @@ def editVideo(request, watch_id):
 			form.save()
 	form = EditVideoForm(instance=video)
 	return render(request, 'streamer/edit_video.html', {'form' : form})
+
+def login(request):
+	print(request)
+	if request.method == 'POST':
+		form = LoginForm(request.POST)
+		if form.is_valid:
+			print(request.POST)
+			user = authenticate(request, username=request.POST.get('username'), password=request.POST.get('password'))
+			if user is not None:
+				login(user)
+				return redirect('/')
+	else:
+		form = LoginForm()
+	return render(request, 'streamer/login.html', {'form' : form})
 
 def signup(request):
 	if request.method == 'POST':

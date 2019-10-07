@@ -3,13 +3,403 @@
 {% block main_content %}
 
 {% include 'streamer/navbar.html' %}
-<h1>{{ channel.name }}</h1>
-<ul>
-	{% for video in videos %}
-	<li>
-		<a href="/watch/{{ video.watch_id }}">{{ video.title }}</a>
-	</li>
-	{% endfor %}
-</ul>
+
+
+<style type="text/css">
+	.channel-header-container {
+		grid-column-start: 1;
+		grid-column-end: 4;
+		overflow: hidden;
+	    background: #202020 url(//web.archive.org/web/20120223033441im_/http://s.ytimg.com/yt/img/channels/bg-channel-header-vfl6TeHdT.png) repeat-x;
+	    margin-top: 20px;
+	    -moz-border-radius: 5px;
+	    -webkit-border-radius: 5px;
+	    border-radius: 5px;
+	    -moz-border-radius-bottomright: 0;
+	    -webkit-border-bottom-right-radius: 0;
+	    border-bottom-right-radius: 0;
+	    -moz-border-radius-bottomleft: 0;
+	    -webkit-border-bottom-left-radius: 0;
+	    border-bottom-left-radius: 0;
+	}
+
+	.channel-header-upper {
+		display: flex;
+	    align-items: center;
+	    justify-content: space-between;
+	    padding: 10px 25px 10px 8px;
+	}
+
+	.channel-header-upper-left {
+		display: flex;
+	    align-items: center;
+	}
+
+	.channel-header-upper-right {
+		display: flex;
+	    align-items: center;
+	    color: #fff;
+	}
+
+	.channel-header-upper h1 {
+		font-weight: normal;
+	    font-size: 24px;
+	    color: #fff;
+	    margin-left: 15px;
+	    margin-right: 15px;
+	}
+
+	.channel-header-upper button {
+		height: 26px;
+	    padding-left: 3px;
+	    filter: none;
+	    -moz-border-radius: 5px;
+	    -webkit-border-radius: 5px;
+	    border-radius: 5px;
+	    -moz-border-radius-bottomleft: 15px;
+	    -webkit-border-bottom-left-radius: 15px;
+	    border-bottom-left-radius: 15px;
+	    -moz-border-radius-topleft: 15px;
+	    -webkit-border-top-left-radius: 15px;
+	    border-top-left-radius: 15px;
+	    -moz-box-shadow: inset 0 0 1px #fff;
+	    -ms-box-shadow: inset 0 0 1px #fff;
+	    -webkit-box-shadow: inset 0 0 1px #fff;
+	    box-shadow: inset 0 0 1px #fff;
+	}
+
+	.stat-entry {
+		padding: 15px;
+		color: #999;
+		text-align: center;
+		font-size: 120%;
+	}
+
+	.channel-header-lower {
+		display: flex;
+		justify-content: space-between;
+		background: #444;
+	    border-top: 1px solid #3b3b3b;
+	    -moz-box-shadow: inset 0 1px 2px rgb(34,34,34);
+	    -ms-box-shadow: inset 0 1px 2px rgb(34,34,34);
+	    -webkit-box-shadow: inset 0 1px 2px rgb(34,34,34);
+	    box-shadow: inset 0 1px 2px rgb(34,34,34);
+	    background-image: -moz-linear-gradient(bottom,#323232 0,#4f4f4f 70%);
+	    background-image: -ms-linear-gradient(bottom,#323232 0,#4f4f4f 70%);
+	    background-image: -o-linear-gradient(bottom,#323232 0,#4f4f4f 70%);
+	    background-image: -webkit-gradient(linear,left bottom,left center,color-stop(0,#323232),color-stop(70%,#4f4f4f));
+	    background-image: -webkit-linear-gradient(bottom,#323232 0,#4f4f4f 70%);
+	    background-image: linear-gradient(to center,#323232 0,#4f4f4f 70%);
+	    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#4f4f4f,endColorStr=#323232);
+	}
+
+	.channel-header-lower ul {
+		list-style: none;
+		margin: 0px;
+		padding: 0px;
+	}
+
+	.channel-header-lower li {
+		display: inline;
+	}
+
+	.channel-header-lower li > a {
+		padding: 8px 20px;
+	    color: #eaeaea;
+	    font-size: 14px;
+	    cursor: pointer;
+	    border: 0;
+	    outline: none;
+	    text-decoration: none;
+	    display: inline-block;
+	}
+
+	.channel-header-lower li > a:hover {
+		background: #444;
+	    background-image: -moz-linear-gradient(center bottom,#3a3a3a 0,#555 70%);
+	    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0,#3a3a3a),color-stop(0.7,#555));
+	    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#555555,endColorStr=#3a3a3a);
+	    -moz-box-shadow: 0 1px 2px rgb(34,34,34);
+	    -webkit-box-shadow: 0 1px 2px rgb(34,34,34);
+	    box-shadow: 0 1px 2px rgb(34,34,34);
+	}
+
+	.channel-header-lower li.selected > a {
+	    background: #252525;
+	    border-top: 1px solid #484848;
+	    position: relative;
+	    top: -1px;
+	    -moz-box-shadow: 1px 0 15px #232323;
+	    -ms-box-shadow: 1px 0 15px #232323;
+	    -webkit-box-shadow: 1px 0 15px #232323;
+	    box-shadow: 1px 0 15px #232323;
+	    background-image: -moz-linear-gradient(top,#323232 0,#1c1c1c 70%);
+	    background-image: -ms-linear-gradient(top,#323232 0,#1c1c1c 70%);
+	    background-image: -o-linear-gradient(top,#323232 0,#1c1c1c 70%);
+	    background-image: -webkit-gradient(linear,left top,left center,color-stop(0,#323232),color-stop(70%,#1c1c1c));
+	    background-image: -webkit-linear-gradient(top,#323232 0,#1c1c1c 70%);
+	    background-image: linear-gradient(to center,#323232 0,#1c1c1c 70%);
+	}
+
+	.channel-header-search {
+	    padding: 5px 10px;
+	}
+
+	.channel-header-search input {
+		height: 15px;
+	    font-size: 12px;
+	    background: #333;
+	    outline: none;
+	    width: 260px;
+	    border: 0;
+	    border-bottom: 1px solid #626262;
+	    padding: 4px 0 4px 10px;
+	    outline: none;
+	    color: #fff;
+	    -moz-box-shadow: inset 0px 2px 3px #151515;
+	    -ms-box-shadow: inset 0px 2px 3px #151515;
+	    -webkit-box-shadow: inset 0px 2px 3px #151515;
+	    box-shadow: inset 0px 2px 3px #151515;
+	    -moz-border-radius: 3px 0 0 3px;
+	    -webkit-border-radius: 3px 0 0 3px;
+	    border-radius: 3px 0 0 3px;
+	}
+
+	.channel-header-search button {
+		cursor: pointer;
+		margin: 0px;
+		padding: 0px;
+		border: 0px;
+	    width: 24px;
+	    height: 23px;
+	    color: #999;
+	    -moz-box-shadow: 0 1px 1px #222;
+	    -ms-box-shadow: 0 1px 1px #222;
+	    -webkit-box-shadow: 0 1px 1px #222;
+	    box-shadow: 0 1px 1px #222;
+	    -moz-border-radius: 0 5px 5px 0;
+	    -webkit-border-radius: 0 5px 5px 0;
+	    border-radius: 0 5px 5px 0;
+	    background-image: -moz-linear-gradient(top,#323232 0,#1c1c1c 70%);
+	    background-image: -ms-linear-gradient(top,#323232 0,#1c1c1c 70%);
+	    background-image: -o-linear-gradient(top,#323232 0,#1c1c1c 70%);
+	    background-image: -webkit-gradient(linear,left top,left center,color-stop(0,#323232),color-stop(70%,#1c1c1c));
+	    background-image: -webkit-linear-gradient(top,#323232 0,#1c1c1c 70%);
+	    background-image: linear-gradient(to center,#323232 0,#1c1c1c 70%);
+	}
+
+	.channel-body {
+		display: grid;
+		grid-template-columns: 2fr 1fr;
+		grid-column-start: 1;
+		grid-column-end: 4;
+
+		/*width: 100%;*/
+	    overflow: hidden;
+	    padding-bottom: 60px;
+	    background: url(//web.archive.org/web/20120223033441im_/http://s.ytimg.com/yt/img/channels/bg-layout-2col-ltr-vflzXzuyp.png) repeat-y #ccc;
+	    min-height: 550px;
+	    -moz-border-radius-bottomleft: 3px;
+	    -webkit-border-bottom-left-radius: 3px;
+	    border-bottom-left-radius: 3px;
+	    -moz-border-radius-bottomright: 3px;
+	    -webkit-border-bottom-right-radius: 3px;
+	    border-bottom-right-radius: 3px;
+	}
+
+	.primary-pane {
+		padding: 0px 8px;
+	}
+
+	.playlist-module ul {
+		list-style: none;
+		padding: 0;
+	}
+
+	.playlist-module ul>li {
+		background-color: #fff;
+	    margin-bottom: 20px;
+	}
+
+	.playlist-module a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.playlist-header {
+		display: flex;
+		justify-content: space-between;
+	    align-items: center;
+	}
+
+	.playlist-header h2 {
+	    display: inline-block;
+	}
+
+	.playlist-item-main {
+		display: flex;
+	}
+
+	.playlist-item-main h4 {
+		margin: 0;
+	    color: #333;
+	    font-size: 15px;
+	    line-height: 1.2em;
+	    max-height: 2.4em;
+	    overflow: hidden;
+	}
+
+	.playlist-item-thumb {
+		height: 162px;
+	}
+
+	.playlist-item-content {
+	    padding: 20px;
+	    display: flex;
+	    flex-flow: column;
+	    align-self: center;
+	}
+
+	.playlist-item-meta {
+	    margin: 3px 0;
+	    font-size: 11px;
+	}
+
+	.playlist-item-channel {
+		color: #999;
+	}
+
+	.playlist-item-views {
+		color: #666;
+	}
+
+	.playlist-item-description {
+		color: #999;
+	    max-height: 48px;
+	    overflow: hidden;
+	    margin-top: 10px;
+	}
+
+	.secondary-pane {
+		/*margin-left: 30px;*/
+	}
+
+	.channel-info {
+		padding: 0px 25px;
+	}
+
+	.channel-info-section.first {
+		    width: 100%;
+	    border-top: none;
+	    padding-top: 0;
+	}
+
+	.channel-info-section {
+		overflow: hidden;
+	    padding-top: 15px;
+	    border-top: 1px solid #eee;
+	    border-bottom: 1px solid #ccc;
+	}
+
+	.channel-info-item {
+		    overflow: hidden;
+		    margin-bottom: 11px;
+	}
+	.channel-info>h2 {
+		font-weight: normal;
+	}
+
+	.channel-info-created>div {
+		display: flex;
+		justify-content: space-between;
+	}
+
+</style>
+
+
+<div class="channel-header-container">
+	<div class="channel-header-upper">
+		<div class="channel-header-upper-left">
+			<img src="https://dummyimage.com/55x55/aaaaaa/f00.png&text=AVATAR">
+			<h1>{{ channel.name }}</h1>
+			<button>Subscribe</button>
+		</div>
+		<div class="channel-header-upper-right">
+			<div class="stat-entry"><div>11</div><div>subscribers</div></div>
+			<div class="stat-entry"><div>50,123,543</div><div>video views</div></div>
+		</div>
+	</div>
+	<div class="channel-header-lower">
+		<ul>
+			<li class="selected"><a href="">Featured</a></li>
+			<li><a href="">Feed</a></li>
+			<li><a href="">Videos</a></li>
+		</ul>
+		<form class="channel-header-search">
+			<input type="text" name="query" placeholder="Search channel">
+			<button>S</button>
+		</form>
+	</div>
+</div>
+<div class="channel-body">
+	<div class="primary-pane">
+		<div class="playlist-module">
+			<div class="playlist-header">
+				<div>
+					<h2>Uploaded videos</h2>
+					<span>(1-3 of 3)</span>
+				</div>
+				<button>Play All</button>
+			</div>
+			<ul>
+				{% for video in videos %}
+				<li>
+					<a href="watch/{{ video.watch_id }}">
+						<div class="playlist-item-main">
+							<img class="playlist-item-thumb" src="{{ video.thumbnail.url }}">
+							<div class="playlist-item-content">
+								<h4>{{ video.title }}</h4>
+								<div class="playlist-item-meta">
+									<span class="playlist-item-channel">
+										<i class="fas fa-user"></i>
+										{{ video.channel.name }} uploaded
+									</span>
+									<span class="playlist-item-views">
+										{{ video.view_count }} views
+									</span>
+								</div>
+								<div class="playlist-item-description">
+									{{ video.description }}
+								</div>
+							</div>
+						</div>
+					</a>
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+	<div class="secondary-pane">
+		<div class="channel-info">
+			<h2>About {{ channel.name }}</h2>
+			<div class="channel-info-custom channel-info-section">
+				<div class="channel-info-item">
+					USER DEFINED CHANNEL DESCRIPTION.
+				</div>
+			</div>
+			<div class="channel-info-created channel-info-section">
+				<div class="channel-info-item">
+					<div>Created by</div><div>{{ channel.owner.username }}</div>
+				</div>
+				<div class="channel-info-item">
+					<div>Last Activity</div><div>{{ channel.owner.last_login|date:"d M Y"|default:"--" }}</div>
+				</div>
+				<div class="channel-info-item">
+					<div>Date Joined</div><div>{{ channel.owner.date_joined|date:"d M Y" }}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
 {% endblock main_content %}

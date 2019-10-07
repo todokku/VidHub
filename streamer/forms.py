@@ -20,3 +20,11 @@ class SignUpForm(UserCreationForm):
 	class Meta:
 		model = User
 		fields = ['username', 'password1', 'password2']
+
+class LoginForm(forms.ModelForm):
+	class Meta:
+		model = User
+		fields = ['username', 'password']
+		help_texts = {
+			'username' : None
+		}
