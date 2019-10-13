@@ -234,10 +234,69 @@
 
 	.playlist-header h2 {
 	    display: inline-block;
+	    padding-right: 10px;
+	}
+
+	.playlist-header span {
+		color: #808080;
+	}
+
+	.playlist-playall {
+		border: 3px solid #fff;
+	    padding: 5px 15px;
+	    vertical-align: middle;
+	    font-size: 11px;
+	    font-weight: bold;
+	    line-height: normal;
+	    background-color: #343436;
+	    color: #fff;
+	    text-shadow: 0 -1px 1px #000;
+	    -moz-border-radius: 20px;
+	    -webkit-border-radius: 20px;
+	    border-radius: 20px;
+	    -moz-box-shadow: 0 2px 1px #ddd;
+	    -ms-box-shadow: 0 2px 1px #ddd;
+	    -webkit-box-shadow: 0 2px 1px #ddd;
+	    box-shadow: 0 2px 1px #ddd;
+	    display: inline-block;
+	    *display: inline;
+	    *zoom: 1;
+	    background-image: -moz-linear-gradient(top,#343436 0,#1b1b1b 100%);
+	    background-image: -ms-linear-gradient(top,#343436 0,#1b1b1b 100%);
+	    background-image: -o-linear-gradient(top,#343436 0,#1b1b1b 100%);
+	    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#343436),color-stop(100%,#1b1b1b));
+	    background-image: -webkit-linear-gradient(top,#343436 0,#1b1b1b 100%);
+	    background-image: linear-gradient(to bottom,#343436 0,#1b1b1b 100%);
+	    cursor: pointer;
+	}
+
+	.playlist-playall:hover {
+		text-decoration: none;
+	    background-color: #555;
+	    background-image: -moz-linear-gradient(top,#777 0,#111 100%);
+	    background-image: -ms-linear-gradient(top,#777 0,#111 100%);
+	    background-image: -o-linear-gradient(top,#777 0,#111 100%);
+	    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#777),color-stop(100%,#111));
+	    background-image: -webkit-linear-gradient(top,#777 0,#111 100%);
+	    background-image: linear-gradient(to bottom,#777 0,#111 100%);
 	}
 
 	.playlist-item-main {
 		display: flex;
+		-moz-box-shadow: 0 1px 1px rgb(204,204,204);
+	    -ms-box-shadow: 0 1px 1px rgb(204,204,204);
+	    -webkit-box-shadow: 0 1px 1px rgb(204,204,204);
+	    box-shadow: 0 1px 1px rgb(204,204,204);
+	    -moz-border-radius: 3px;
+	    -webkit-border-radius: 3px;
+	    border-radius: 3px;
+	}
+
+	.playlist-item-main:hover {
+		-moz-box-shadow: 0 1px 1px #888;
+	    -ms-box-shadow: 0 1px 1px #888;
+	    -webkit-box-shadow: 0 1px 1px #888;
+	    box-shadow: 0 1px 1px #888;
 	}
 
 	.playlist-item-main h4 {
@@ -286,10 +345,20 @@
 
 	.channel-info {
 		padding: 0px 25px;
+	    margin: 15px 0;
+	    color: #808080;
+	}
+
+	.channel-info>h2 {
+		font-weight: normal;
+	    padding: 0;
+	    color: #000;
+	    font-size: 14px;
+	    margin: 8px 0;
 	}
 
 	.channel-info-section.first {
-		    width: 100%;
+	    width: 100%;
 	    border-top: none;
 	    padding-top: 0;
 	}
@@ -304,9 +373,6 @@
 	.channel-info-item {
 		    overflow: hidden;
 		    margin-bottom: 11px;
-	}
-	.channel-info>h2 {
-		font-weight: normal;
 	}
 
 	.channel-info-created>div {
@@ -347,9 +413,9 @@
 			<div class="playlist-header">
 				<div>
 					<h2>Uploaded videos</h2>
-					<span>(1-3 of 3)</span>
+					<span>1-3 of 3</span>
 				</div>
-				<button>Play All</button>
+				<button class="playlist-playall">Play All</button>
 			</div>
 			<ul>
 				{% for video in videos %}
