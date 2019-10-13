@@ -64,12 +64,10 @@ class Video(models.Model):
 
 class Playlist(models.Model):
 	title = models.CharField(max_length=100)
-	owner = models.OneToOneField(Channel, on_delete=models.CASCADE)
+	owner = models.ForeignKey(Channel, on_delete=models.CASCADE)
+	videos = models.ManyToManyField(Video)
 
 	def __str__(self):
 		return self.title
 
-class Playlist_Has_Video(models.Model):
-	video = models.ForeignKey(Video, on_delete=models.CASCADE)
-	playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
 
