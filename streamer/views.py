@@ -28,6 +28,8 @@ def index(request):
 
 def video(request, watch_id):
 	video = get_object_or_404(Video, watch_id__exact=watch_id)
+	video.view_count += 1
+	video.save()
 	formats = video.format_set.complete().all()
 	for e in formats:
 		e.codec,e.label = e.format.split('_')
