@@ -53,7 +53,7 @@ class Video(models.Model):
 	format_set = GenericRelation(Format)
 
 	channel = models.ForeignKey(Channel, on_delete=models.CASCADE, blank=True, null=True)
-	category = models.ForeignKey(Category, on_delete=models.CASCADE)
+	category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
 
 	def __str__(self):
 		return str(self.file)

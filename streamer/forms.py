@@ -7,7 +7,7 @@ from .models import Video
 class VideoForm(forms.ModelForm):
 	class Meta:
 		model=Video
-		fields=["file"]
+		fields=["file", "category"]
 
 class EditVideoForm(forms.ModelForm):
 	class Meta:

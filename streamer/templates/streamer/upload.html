@@ -38,6 +38,7 @@
 	       style="display: none;"
 	       data-url="{% url 'streamer:upload' %}"
 	       data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
+	{{ form.category }}
 </div>
 
 <div id='edit_upload' class="d-none">
