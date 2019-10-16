@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 
 from video_encoding.backends.ffmpeg import FFmpegBackend
 
-from .models import Video, Channel, Category
+from .models import Video, Channel, Category, Playlist
 from .forms import VideoForm, EditVideoForm, SignUpForm, LoginForm
 
 def index(request):
@@ -30,6 +30,10 @@ def video(request, watch_id):
 	video = get_object_or_404(Video, watch_id__exact=watch_id)
 	video.view_count += 1
 	video.save()
+	if request.user.is_authenticated:
+		channel = Channel.objects.get(owner__exact=request.user)
+		playlist = Playlist.objects.get(owner__exact=channel, title__exact='History')
+		playlist.videos.add(video)
 	formats = video.format_set.complete().all()
 	for e in formats:
 		e.codec,e.label = e.format.split('_')
