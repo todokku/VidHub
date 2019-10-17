@@ -1,4 +1,5 @@
-from datetime import date
+# from datetime import date, datetime
+from django.utils import timezone
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -44,7 +45,7 @@ class Video(models.Model):
 	status = models.CharField(max_length=8, choices=VIDEO_STATUS_CHOICES, blank=True)
 	view_count = models.BigIntegerField(default=0)
 	video_type = models.CharField(max_length=10, choices=VIDEO_TYPE_CHOICES, default='local')
-	uploaded = models.DateField(default=date.today)
+	uploaded = models.DateTimeField(default=timezone.now)
 	width = models.PositiveIntegerField(editable=False, null=True)
 	height = models.PositiveIntegerField(editable=False, null=True)
 	duration = models.FloatField(editable=False, null=True)
@@ -61,11 +62,14 @@ class Video(models.Model):
 	def get_channel(self):
 		return Channel.objects.get(pk__exact=self.channel)
 
+class PlaylistEntry(models.Model):
+	video = models.ForeignKey(Video, on_delete=models.CASCADE)
+	date_added = models.DateTimeField(default=timezone.now)
 
 class Playlist(models.Model):
 	title = models.CharField(max_length=100)
 	owner = models.ForeignKey(Channel, on_delete=models.CASCADE)
-	videos = models.ManyToManyField(Video)
+	videos = models.ManyToManyField(PlaylistEntry)
 
 	def __str__(self):
 		return self.title

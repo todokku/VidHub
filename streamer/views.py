@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 
 from video_encoding.backends.ffmpeg import FFmpegBackend
 
-from .models import Video, Channel, Category, Playlist
+from .models import Video, Channel, Category, Playlist, PlaylistEntry
 from .forms import VideoForm, EditVideoForm, SignUpForm, LoginForm
 
 def index(request):
@@ -33,7 +33,8 @@ def video(request, watch_id):
 	if request.user.is_authenticated:
 		channel = Channel.objects.get(owner__exact=request.user)
 		playlist = Playlist.objects.get(owner__exact=channel, title__exact='History')
-		playlist.videos.add(video)
+		playlistEntry = PlaylistEntry.objects.create(video=video)
+		playlist.videos.add(playlistEntry)
 	formats = video.format_set.complete().all()
 	for e in formats:
 		e.codec,e.label = e.format.split('_')
@@ -133,3 +134,10 @@ def channel(request, channel_id):
 	channel = Channel.objects.get(channel_id__exact=channel_id)
 	videos = Video.objects.filter(channel__exact=channel)
 	return render(request, 'streamer/channel.html', {'channel' : channel, 'videos' : videos})
+
+@login_required
+def history(request):
+	channel = Channel.objects.get(owner__exact=request.user.id)
+	playlist = Playlist.objects.get(owner__exact=channel, title__exact='History')
+	videos = playlist.videos.order_by('-date_added')
+	return render(request, 'streamer/history.html', { 'videos' : videos })
