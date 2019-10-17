@@ -15,12 +15,16 @@ from .models import Video, Channel, Category, Playlist, PlaylistEntry
 from .forms import VideoForm, EditVideoForm, SignUpForm, LoginForm
 
 def index(request):
+	categories = Category.objects.all()
 	search=request.GET.get('q', None)
-	if search:
-		videos = Video.objects.filter(title__icontains=search)
+	category_name = request.GET.get('c', None)
+	if category_name:
+		category = Category.objects.get(name__exact=category_name)
+		videos = Video.objects.filter(category__exact=category)
 	else:
 		videos = Video.objects.all()
-	categories = Category.objects.all()
+	if search:
+		videos = videos.filter(title__icontains=search)
 	context = { 'videos' : videos, 'categories' : categories }
 	if request.user.is_authenticated:
 		context['channel'] = Channel.objects.get(owner__exact=request.user)
