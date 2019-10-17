@@ -1,0 +1,13 @@
+{% extends 'streamer/base.html' %}
+
+{% block main_content %}
+
+{% include 'streamer/navbar.html' %}
+
+<ul>
+	{% for entry in videos %}
+		<li><p>{{ entry.video.title }}</p><p>{{ entry.date_added }}</li>
+	{% endfor %}
+</ul>
+
+{% endblock %}
