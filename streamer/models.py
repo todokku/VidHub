@@ -75,3 +75,6 @@ class Playlist(models.Model):
 		return self.title
 
 
+class Subscription(models.Model):
+	from_channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name="subscriber")
+	to_channel = models.ForeignKey(Channel, on_delete=models.CASCADE)

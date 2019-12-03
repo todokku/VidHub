@@ -388,7 +388,15 @@
 		<div class="channel-header-upper-left">
 			<img src="https://dummyimage.com/55x55/aaaaaa/f00.png&text=AVATAR">
 			<h1>{{ channel.name }}</h1>
-			<button>Subscribe</button>
+				{% if subscribed %}
+					<button id="subscribe" class="js-action-unsubscribe">
+						Unsubscribe
+					</button>
+				{% else %}
+					<button id="subscribe" class="js-action-subscribe">
+						Subscribe
+					</button>
+				{% endif %}
 		</div>
 		<div class="channel-header-upper-right">
 			<div class="stat-entry"><div>11</div><div>subscribers</div></div>
@@ -466,6 +474,45 @@
 			</div>
 		</div>
 	</div>
+	{% csrf_token %}
 </div>
-
 {% endblock main_content %}
+
+{% block javascript %}
+	<script type="text/javascript">
+		$('#subscribe').click(function () {
+			console.log("SUBSCRIBE CLICKED!");
+			let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+			let action = "subscribe"
+			if ($(this).hasClass('js-action-unsubscribe')) {
+				action = "unsubscribe"
+			}
+			$.ajax({
+				type: 'POST',
+				context: this,
+				url: '/subscribe/',
+				beforeSend: function (request) {
+					request.setRequestHeader("X-CSRFToken", csrftoken);
+				},
+				data: {
+					'csfrmiddlewaretoken' : csrftoken,
+					'channel_id' : {{ channel.pk }},
+					'action' : action
+				},
+				dataType: 'json',
+				success: function (data) {
+					console.log(data)
+					$(this).toggleClass('js-action-subscribe');
+					$(this).toggleClass('js-action-unsubscribe');
+					if ($(this).html().trim() === 'Subscribe') {
+						$(this).html('Unsubscribe');
+					} else {
+						$(this).html('Subscribe');
+					}
+				}
+			});
+		});
+	</script>
+
+
+{% endblock javascript %}

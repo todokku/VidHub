@@ -2,9 +2,7 @@ from django.contrib import admin
 
 from video_encoding.admin import FormatInline
 
-from .models import Video
-from .models import Channel
-from .models import Category
+from .models import Video, Channel, Category
 
 @admin.register(Video)
 class VideoAdmin(admin.ModelAdmin):

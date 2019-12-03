@@ -1,5 +1,6 @@
 import os
 
+from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
@@ -11,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 
 from video_encoding.backends.ffmpeg import FFmpegBackend
 
-from .models import Video, Channel, Category, Playlist, PlaylistEntry
+from .models import Video, Channel, Category, Playlist, PlaylistEntry, Subscription
 from .forms import VideoForm, EditVideoForm, SignUpForm, LoginForm
 
 def index(request):
@@ -137,7 +138,13 @@ def signup(request):
 def channel(request, channel_id):
 	channel = Channel.objects.get(channel_id__exact=channel_id)
 	videos = Video.objects.filter(channel__exact=channel)
-	return render(request, 'streamer/channel.html', {'channel' : channel, 'videos' : videos})
+
+	if request.user.is_authenticated:
+		loggedin_channel = Channel.objects.get(owner__exact=request.user)
+		subscribed = Subscription.objects.filter(from_channel__exact=loggedin_channel, to_channel__exact=channel).exists()
+	else:
+		subscribed = False
+	return render(request, 'streamer/channel.html', {'channel' : channel, 'videos' : videos, 'subscribed' : subscribed})
 
 @login_required
 def history(request):
@@ -145,3 +152,17 @@ def history(request):
 	playlist = Playlist.objects.get(owner__exact=channel, title__exact='History')
 	videos = playlist.videos.order_by('-date_added')
 	return render(request, 'streamer/history.html', { 'videos' : videos })
+
+def subscribe(request):
+	if request.method == 'POST' and request.user.is_authenticated:
+		from_channel = Channel.objects.get(owner__exact=request.user)
+		to_channel = Channel.objects.get(pk=request.POST.get('channel_id'))
+
+		if request.POST.get('action') == 'subscribe':
+			Subscription.objects.create(from_channel=from_channel, to_channel=to_channel)
+		else:
+			subscription = Subscription.objects.get(from_channel__exact=from_channel, to_channel__exact=to_channel)
+			subscription.delete()
+		return JsonResponse({'success' : True})
+	else:
+		raise SuspiciousOperation

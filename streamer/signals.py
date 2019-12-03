@@ -10,10 +10,7 @@ from django_rq import enqueue
 
 from video_encoding import tasks
 
-from .models import Video
-from .models import Profile
-from .models import Channel
-from .models import Playlist
+from .models import Video, Profile, Channel, Playlist
 
 @receiver(post_save, sender=Video)
 def convert_video(sender, instance, created, **kwargs):
@@ -45,6 +42,7 @@ def pre_save_create_channel_id(sender, instance, **kwargs):
 		instance.channel_id = new_channel_id
 
 		Playlist.objects.create(owner=instance, title='History')
+
 
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
