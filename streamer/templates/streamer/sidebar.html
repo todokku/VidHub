@@ -84,6 +84,11 @@
         background-image: linear-gradient(to bottom,#474747 0,#2b2b2b 100%);
     }
 
+    .btn-dark:hover {
+        background-color: #333;
+        background-image: linear-gradient(to top,#333 0,#333 100%);
+    }
+
     .btn-blue {
         color: #fff;
         background-color: #6891e7;
@@ -102,6 +107,10 @@
         background-image: linear-gradient(to bottom,#6891e7 0,#304ea6 100%);
     }
 
+    .btn-blue:hover {
+        background-image: linear-gradient(to top,#557cd1 93%,#304ea6 100%);
+    }
+
     .btn {
         height: 2.95em;
         padding: 0 .91em;
@@ -111,7 +120,7 @@
         font-size: 11px;
         white-space: nowrap;
         word-wrap: normal;
-        vertical-align: middle;
+        text-align: center;
         cursor: pointer;
         overflow: visible;
         -moz-border-radius: 3px;
@@ -121,11 +130,12 @@
 
     .btn-sidebar-header {
         display: block;
-        width: 100%;
+        /*width: 100%;*/
         margin-top: 5px;
-        line-height: 17px;
+        line-height: 2.95em;
         font-size: 13px;
         border: 0px;
+        text-decoration: none;
     }
 
     .sidebar-profile {
@@ -174,10 +184,10 @@
     	<div class="sidebar-header">
     		<h2>Sign in to add channels to your homepage</h2>
             <div>
-                <button class="btn btn-dark btn-sidebar-header">Sign In</button>
+                <a class="btn btn-dark btn-sidebar-header" href="/login">Sign In</a>
             </div>
             <div>
-                <button class="btn btn-blue btn-sidebar-header">Create Account</button>
+                <a class="btn btn-blue btn-sidebar-header" href="/signup">Create Account</a>
             </div>
         </div>
     {% endif %}
