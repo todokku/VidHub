@@ -23,15 +23,38 @@
 
 {% include 'streamer/navbar.html' %}
 
-<video id="video" class="video-js vjs-default-skin" controls preload="none" width="640" height="264" poster="{{ video.thumbnail.url }}" data-setup="{}">
-{% for format in formats %}
-	<source src="{{ MEDIA_URL }}{{ format.file }}" type="video/{{ format.codec }}" label="{{ format.label }}">
-{% endfor %}
-<p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
-</video>
+<div>
+	<div>{{ video.title }}</div>
+	<div>
+		<button>{{ video.channel.name }}</button>
+		<button>Subscribe</button>
+	</div>
 
-<script>
-  videojs('#video').videoJsResolutionSwitcher()
-</script>
+	<video id="video" class="video-js vjs-default-skin" controls preload="none" width="640" height="264" poster="{{ video.thumbnail.url }}" data-setup="{}">
+	{% for format in formats %}
+		<source src="{{ MEDIA_URL }}{{ format.file }}" type="video/{{ format.codec }}" label="{{ format.label }}">
+	{% endfor %}
+	<p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+	</video>
 
+	<script>
+	  videojs('#video').videoJsResolutionSwitcher()
+	</script>
+
+	<div>
+		<div>
+			<button>Like</button>
+			<button>Dislike</button>
+			<button>Add to</button>
+			<button>Share</button>
+			<button>Report</button>
+		</div>
+		<div>
+			<div>{{ video.view_count }} views</div>
+			<button>Stats</button>
+	</div>
+</div>
+<div>
+	
+</div>
 {% endblock main_content %}
