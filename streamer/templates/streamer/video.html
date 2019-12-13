@@ -10,10 +10,83 @@
 <script src="{% static 'js/videojs-resolution-switcher.js' %}"></script>
 
 <style type="text/css">
+	
 	.vjs-control .vjs-button {
 		width: auto;
 		height: auto;
 	}
+
+	.video-title {
+		height: 1.1363em;
+	    max-height: 1.1363em;
+	    font-size: 1.8333em;
+	    font-weight: bold;
+	    line-height: 1.1363em;
+	    margin: 0 0 5px;
+	    color: #333;
+	    overflow: hidden;
+	}
+
+	.btn-group {
+		display: flex;
+	}
+
+	.btn {
+		margin: 0;
+		background: transparent;
+		font: 12px arial,sans-serif;
+		height: 2.95em;
+		padding: 0 .91em;
+		outline: 0;
+		font-weight: bold;
+		font-size: 11px;
+		white-space: nowrap;
+		word-wrap: normal;
+		vertical-align: middle;
+		cursor: pointer;
+		text-shadow: 0 1px 0 #fff;
+		background-color: #e0e0e0;
+		background-image: linear-gradient(to bottom,#fff 0,#e0e0e0 100%);
+		border: 1px solid;
+		box-shadow: inset 0 0 1px #fff;
+		color: #555;
+		border-right-style: none;
+		border-radius: 0;
+		border-top-left-radius: 3px;
+		border-bottom-left-radius: 3px;
+		border-color: #ccc;
+		border-bottom-color: #aaa;
+	}
+
+	.btn:hover {
+		border-color: #999;
+		box-shadow: 0 1px 2px rgba(0,0,0,0.25), inset 0 0 3px #fff;
+	}
+	
+	.btn:last-child {
+		border-right-style: solid;
+		border-left-style: none;
+		border-radius: 0;
+		border-top-right-radius: 3px;
+		border-bottom-right-radius: 3px;
+		border-color: #ccc;
+		border-bottom-color: #aaa;
+	}
+
+	.btn:last-child:hover {
+		border-color: #999;
+		box-shadow: 0 1px 2px rgba(0,0,0,0.25), inset 0 0 3px #fff;
+	}
+
+	.video-container {
+	    margin: 5px 0px;
+	}
+
+	.video-buttons {
+		display: flex;
+		justify-content: space-between;
+	}
+
 </style>
 
 {% endblock head %}
@@ -23,38 +96,61 @@
 
 {% include 'streamer/navbar.html' %}
 
-<div>
-	<div>{{ video.title }}</div>
-	<div>
-		<button>{{ video.channel.name }}</button>
-		<button>Subscribe</button>
+<div style="grid-column-start: 1; grid-column-end: 3">
+	<div class="video-title">{{ video.title }}</div>
+	<div id="channel-buttons" class="btn-group">
+		<button class="btn">{{ video.channel.name }}</button>
+		<button class="btn">Subscribe</button>
 	</div>
 
-	<video id="video" class="video-js vjs-default-skin" controls preload="none" width="640" height="264" poster="{{ video.thumbnail.url }}" data-setup="{}">
-	{% for format in formats %}
-		<source src="{{ MEDIA_URL }}{{ format.file }}" type="video/{{ format.codec }}" label="{{ format.label }}">
-	{% endfor %}
-	<p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
-	</video>
+	<div class="video-container">
+		<video id="video" class="video-js vjs-default-skin" controls preload="none" width="670" height="377" poster="{{ video.thumbnail.url }}" data-setup="{}">
+		{% if formats %}
+			{% for format in formats %}
+				<source src="{{ MEDIA_URL }}{{ format.file }}" type="video/{{ format.codec }}" label="{{ format.label }}">
+			{% endfor %}
+		{% else %}
+			<source src="{{ video.file }}" type="video/mp4" label="test">
+		{% endif %}
+		<p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+		</video>
 
-	<script>
-	  videojs('#video').videoJsResolutionSwitcher()
-	</script>
+		<script>
+		  videojs('#video').videoJsResolutionSwitcher()
+		</script>
+	</div>
+
+	<div class="video-buttons">
+		<div style="display: flex;">
+			<div class="btn-group">
+				<button class="btn">Like</button>
+				<button class="btn">Dislike</button>
+			</div>
+			<button class="btn">Add to</button>
+			<button class="btn">Share</button>
+			<button class="btn">Report</button>
+		</div>
+		<div style="display: flex; align-items: center;">
+			<div>{{ video.view_count }} views</div>
+			<button class="btn">Stats</button>
+		</div>
+	</div>
 
 	<div>
 		<div>
-			<button>Like</button>
-			<button>Dislike</button>
-			<button>Add to</button>
-			<button>Share</button>
-			<button>Report</button>
+			<div>
+				Uploaded by {{ video.channel.name }} on {{ video.uploaded }}
+			</div>
+			<div>{{ video.description }}</div>
 		</div>
 		<div>
-			<div>{{ video.view_count }} views</div>
-			<button>Stats</button>
+			<div>---------------------</div>
+			<div>XXX likes XXX dislikes</div>
+		</div>
 	</div>
 </div>
+
 <div>
-	
+
 </div>
 {% endblock main_content %}
