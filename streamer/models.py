@@ -82,3 +82,7 @@ class Subscription(models.Model):
 class Likes(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	video = models.ForeignKey(Video, on_delete=models.CASCADE)
+
+class Dislikes(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	video = models.ForeignKey(Video, on_delete=models.CASCADE)

@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 
 from video_encoding.backends.ffmpeg import FFmpegBackend
 
-from .models import Video, Channel, Category, Playlist, PlaylistEntry, Subscription, Likes
+from .models import Video, Channel, Category, Playlist, PlaylistEntry, Subscription, Likes, Dislikes
 from .forms import VideoForm, EditVideoForm, SignUpForm, LoginForm
 
 def index(request):
@@ -36,6 +36,7 @@ def video(request, watch_id):
 	video.view_count += 1
 	video.save()
 	like_count = Likes.objects.filter(video__exact=video).count()
+	dislike_count = Dislikes.objects.filter(video__exact=video).count()
 	is_video_liked = False
 	if request.user.is_authenticated:
 		channel = Channel.objects.get(owner__exact=request.user)
@@ -43,12 +44,9 @@ def video(request, watch_id):
 		playlistEntry = PlaylistEntry.objects.create(video=video)
 		playlist.videos.add(playlistEntry)
 		is_video_liked = Likes.objects.filter(user__exact=request.user, video__exact=video).exists()
+		is_video_disliked = Dislikes.objects.filter(user__exact=request.user, video__exact=video).exists()
 	formats = video.format_set.complete().all()
-	for e in formats:
-		e.codec,e.label = e.format.split('_')
-		print(e.codec)
-		print(e.label)
-	return render(request, 'streamer/video.html', {'video' : video, 'formats' : formats, 'is_video_liked' : is_video_liked, 'like_count' : like_count})
+	return render(request, 'streamer/video.html', {'video' : video, 'formats' : formats, 'is_video_liked' : is_video_liked, 'is_video_disliked': is_video_disliked, 'like_count' : like_count, 'dislike_count' : dislike_count})
 
 @login_required
 def uploadVideo(request):
@@ -174,14 +172,36 @@ def like(request):
 	if request.method == 'POST' and request.user.is_authenticated:
 		video = Video.objects.get(pk=request.POST.get('video_id'))
 		
+		was_disliked = False
 		if request.POST.get('action') == 'like':
 			if not Likes.objects.filter(user__exact=request.user, video__exact=video).exists():
+				was_disliked = Dislikes.objects.filter(user__exact=request.user, video__exact=video).delete()[0] > 0
 				Likes.objects.create(video=video, user=request.user)
 		
 		elif request.POST.get('action') == 'unlike':
-			Likes.objects.filter(user__exact=request.user, video__exact=video).delete();
+			Likes.objects.filter(user__exact=request.user, video__exact=video).delete()
 
 		like_count = Likes.objects.filter(video__exact=video).count()
-		return JsonResponse({'success' : True, 'like_count' : like_count})
+		dislike_count = Dislikes.objects.filter(video__exact=video).count()
+		return JsonResponse({'success' : True, 'like_count' : like_count, 'dislike_count' : dislike_count, 'was_disliked' : was_disliked})
+	else:
+		raise SuspiciousOperation
+
+def dislike(request):
+	if request.method == 'POST' and request.user.is_authenticated:
+		video = Video.objects.get(pk=request.POST.get('video_id'))
+
+		was_liked = False
+		if request.POST.get('action') == 'dislike':
+			if not Dislikes.objects.filter(user__exact=request.user, video__exact=video).exists():
+				was_liked = Likes.objects.filter(user__exact=request.user, video__exact=video).delete()[0] > 0
+				Dislikes.objects.create(video=video, user=request.user)
+		elif request.POST.get('action') == 'undislike':
+			print("UNDISLIKE")
+			Dislikes.objects.filter(user__exact=request.user, video__exact=video).delete()
+
+		like_count = Likes.objects.filter(video__exact=video).count()
+		dislike_count = Dislikes.objects.filter(video__exact=video).count()
+		return JsonResponse({'success' : True, 'like_count' : like_count, 'dislike_count' : dislike_count, 'was_liked' : was_liked})
 	else:
 		raise SuspiciousOperation

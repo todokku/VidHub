@@ -16,4 +16,5 @@ urlpatterns = [
     path('history/', views.history, name='history'),
     path('subscribe/', views.subscribe, name='subscribe'),
     path('like/', views.like, name='like'),
+    path('dislike/', views.dislike, name='dislike'),
 ]

@@ -87,7 +87,7 @@
 		justify-content: space-between;
 	}
 
-	.js-action-unlike {
+	.js-action-unlike, .js-action-undislike {
 		color: blue;
 	}
 
@@ -132,7 +132,12 @@
 				{% else %}
 					<button id="like" class="btn js-action-like">Like</button>
 				{% endif %}
-				<button id="dislike" class="btn js-action-dislike">Dislike</button>
+
+				{% if is_video_disliked %}
+					<button id="dislike" class="btn js-action-undislike">Dislike</button>
+				{% else %}
+					<button id="dislike" class="btn js-action-dislike">Dislike</button>
+				{% endif %}
 			</div>
 			<button class="btn">Add to</button>
 			<button class="btn">Share</button>
@@ -153,7 +158,7 @@
 		</div>
 		<div>
 			<div>---------------------</div>
-			<div><span id="like_count">{{ like_count }}</span> likes XXX dislikes</div>
+			<div><span id="like_count">{{ like_count }}</span> likes <span id="dislike_count">{{ dislike_count }}</span> dislikes</div>
 		</div>
 	</div>
 </div>
@@ -191,6 +196,45 @@
 					$(this).toggleClass('js-action-like');
 					$(this).toggleClass('js-action-unlike');
 					$('#like_count').html(data['like_count']);
+					$('#dislike_count').html(data['dislike_count']);
+					if (data['was_disliked']) {
+						$('#dislike').toggleClass('js-action-dislike');
+						$('#dislike').toggleClass('js-action-undislike');
+					}
+				}
+			});
+		});
+
+		$('#dislike').click(function () {
+			console.log("DISLIKE CLICKED!");
+			let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+			let action = "dislike"
+			if ($(this).hasClass('js-action-undislike')) {
+				action = "undislike"
+			}
+			$.ajax({
+				type: 'POST',
+				context: this,
+				url: '/dislike/',
+				beforeSend: function (request) {
+					request.setRequestHeader("X-CSRFToken", csrftoken);
+				},
+				data: {
+					'csfrmiddlewaretoken' : csrftoken,
+					'video_id' : {{ video.pk }},
+					'action' : action
+				},
+				dataType: 'json',
+				success: function (data) {
+					console.log(data)
+					$(this).toggleClass('js-action-dislike');
+					$(this).toggleClass('js-action-undislike');
+					$('#like_count').html(data['like_count']);
+					$('#dislike_count').html(data['dislike_count']);
+					if (data['was_liked']) {
+						$('#like').toggleClass('js-action-like');
+						$('#like').toggleClass('js-action-unlike');
+					}
 				}
 			});
 		});
