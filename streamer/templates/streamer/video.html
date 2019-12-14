@@ -104,7 +104,11 @@
 	<div class="video-title">{{ video.title }}</div>
 	<div id="channel-buttons" class="btn-group">
 		<button class="btn">{{ video.channel.name }}</button>
-		<button class="btn">Subscribe</button>
+		{% if subscribed %}
+			<button id="subscribe" class="btn js-action-unsubscribe">Unsubscribe</button>
+		{% else %}
+			<button id="subscribe" class="btn js-action-subscribe">Subscribe</button>
+		{% endif %}
 	</div>
 
 	<div class="video-container">
@@ -234,6 +238,39 @@
 					if (data['was_liked']) {
 						$('#like').toggleClass('js-action-like');
 						$('#like').toggleClass('js-action-unlike');
+					}
+				}
+			});
+		});
+
+		$('#subscribe').click(function () {
+			console.log("SUBSCRIBE CLICKED!");
+			let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+			let action = "subscribe"
+			if ($(this).hasClass('js-action-unsubscribe')) {
+				action = "unsubscribe"
+			}
+			$.ajax({
+				type: 'POST',
+				context: this,
+				url: '/subscribe/',
+				beforeSend: function (request) {
+					request.setRequestHeader("X-CSRFToken", csrftoken);
+				},
+				data: {
+					'csfrmiddlewaretoken' : csrftoken,
+					'channel_id' : {{ video.channel.pk }},
+					'action' : action
+				},
+				dataType: 'json',
+				success: function (data) {
+					console.log(data)
+					$(this).toggleClass('js-action-subscribe');
+					$(this).toggleClass('js-action-unsubscribe');
+					if ($(this).html().trim() === 'Subscribe') {
+						$(this).html('Unsubscribe');
+					} else {
+						$(this).html('Subscribe');
 					}
 				}
 			});

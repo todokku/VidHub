@@ -38,6 +38,7 @@ def video(request, watch_id):
 	like_count = Likes.objects.filter(video__exact=video).count()
 	dislike_count = Dislikes.objects.filter(video__exact=video).count()
 	is_video_liked = False
+	subscribed = False
 	if request.user.is_authenticated:
 		channel = Channel.objects.get(owner__exact=request.user)
 		playlist = Playlist.objects.get(owner__exact=channel, title__exact='History')
@@ -45,8 +46,10 @@ def video(request, watch_id):
 		playlist.videos.add(playlistEntry)
 		is_video_liked = Likes.objects.filter(user__exact=request.user, video__exact=video).exists()
 		is_video_disliked = Dislikes.objects.filter(user__exact=request.user, video__exact=video).exists()
+		loggedin_channel = Channel.objects.get(owner__exact=request.user)
+		subscribed = Subscription.objects.filter(from_channel__exact=loggedin_channel, to_channel__exact=channel).exists()
 	formats = video.format_set.complete().all()
-	return render(request, 'streamer/video.html', {'video' : video, 'formats' : formats, 'is_video_liked' : is_video_liked, 'is_video_disliked': is_video_disliked, 'like_count' : like_count, 'dislike_count' : dislike_count})
+	return render(request, 'streamer/video.html', {'video' : video, 'formats' : formats, 'is_video_liked' : is_video_liked, 'is_video_disliked': is_video_disliked, 'like_count' : like_count, 'dislike_count' : dislike_count, 'subscribed' : subscribed})
 
 @login_required
 def uploadVideo(request):
