@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 
 from video_encoding.backends.ffmpeg import FFmpegBackend
 
-from .models import Video, Channel, Category, Playlist, PlaylistEntry, Subscription
+from .models import Video, Channel, Category, Playlist, PlaylistEntry, Subscription, Likes
 from .forms import VideoForm, EditVideoForm, SignUpForm, LoginForm
 
 def index(request):
@@ -35,17 +35,20 @@ def video(request, watch_id):
 	video = get_object_or_404(Video, watch_id__exact=watch_id)
 	video.view_count += 1
 	video.save()
+	like_count = Likes.objects.filter(video__exact=video).count()
+	is_video_liked = False
 	if request.user.is_authenticated:
 		channel = Channel.objects.get(owner__exact=request.user)
 		playlist = Playlist.objects.get(owner__exact=channel, title__exact='History')
 		playlistEntry = PlaylistEntry.objects.create(video=video)
 		playlist.videos.add(playlistEntry)
+		is_video_liked = Likes.objects.filter(user__exact=request.user, video__exact=video).exists()
 	formats = video.format_set.complete().all()
 	for e in formats:
 		e.codec,e.label = e.format.split('_')
 		print(e.codec)
 		print(e.label)
-	return render(request, 'streamer/video.html', {'video' : video, 'formats' : formats})
+	return render(request, 'streamer/video.html', {'video' : video, 'formats' : formats, 'is_video_liked' : is_video_liked, 'like_count' : like_count})
 
 @login_required
 def uploadVideo(request):
@@ -164,5 +167,21 @@ def subscribe(request):
 			subscription = Subscription.objects.get(from_channel__exact=from_channel, to_channel__exact=to_channel)
 			subscription.delete()
 		return JsonResponse({'success' : True})
+	else:
+		raise SuspiciousOperation
+
+def like(request):
+	if request.method == 'POST' and request.user.is_authenticated:
+		video = Video.objects.get(pk=request.POST.get('video_id'))
+		
+		if request.POST.get('action') == 'like':
+			if not Likes.objects.filter(user__exact=request.user, video__exact=video).exists():
+				Likes.objects.create(video=video, user=request.user)
+		
+		elif request.POST.get('action') == 'unlike':
+			Likes.objects.filter(user__exact=request.user, video__exact=video).delete();
+
+		like_count = Likes.objects.filter(video__exact=video).count()
+		return JsonResponse({'success' : True, 'like_count' : like_count})
 	else:
 		raise SuspiciousOperation

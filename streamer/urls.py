@@ -15,4 +15,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('history/', views.history, name='history'),
     path('subscribe/', views.subscribe, name='subscribe'),
+    path('like/', views.like, name='like'),
 ]

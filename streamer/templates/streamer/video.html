@@ -87,6 +87,10 @@
 		justify-content: space-between;
 	}
 
+	.js-action-unlike {
+		color: blue;
+	}
+
 </style>
 
 {% endblock head %}
@@ -123,8 +127,12 @@
 	<div class="video-buttons">
 		<div style="display: flex;">
 			<div class="btn-group">
-				<button class="btn">Like</button>
-				<button class="btn">Dislike</button>
+				{% if is_video_liked %}
+					<button id="like" class="btn js-action-unlike">Like</button>
+				{% else %}
+					<button id="like" class="btn js-action-like">Like</button>
+				{% endif %}
+				<button id="dislike" class="btn js-action-dislike">Dislike</button>
 			</div>
 			<button class="btn">Add to</button>
 			<button class="btn">Share</button>
@@ -145,7 +153,7 @@
 		</div>
 		<div>
 			<div>---------------------</div>
-			<div>XXX likes XXX dislikes</div>
+			<div><span id="like_count">{{ like_count }}</span> likes XXX dislikes</div>
 		</div>
 	</div>
 </div>
@@ -153,4 +161,40 @@
 <div>
 
 </div>
+{% csrf_token %}
 {% endblock main_content %}
+
+{% block javascript %}
+	<script type="text/javascript">
+		$('#like').click(function () {
+			console.log("LIKE CLICKED!");
+			let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+			let action = "like"
+			if ($(this).hasClass('js-action-unlike')) {
+				action = "unlike"
+			}
+			$.ajax({
+				type: 'POST',
+				context: this,
+				url: '/like/',
+				beforeSend: function (request) {
+					request.setRequestHeader("X-CSRFToken", csrftoken);
+				},
+				data: {
+					'csfrmiddlewaretoken' : csrftoken,
+					'video_id' : {{ video.pk }},
+					'action' : action
+				},
+				dataType: 'json',
+				success: function (data) {
+					console.log(data)
+					$(this).toggleClass('js-action-like');
+					$(this).toggleClass('js-action-unlike');
+					$('#like_count').html(data['like_count']);
+				}
+			});
+		});
+	</script>
+
+
+{% endblock javascript %}

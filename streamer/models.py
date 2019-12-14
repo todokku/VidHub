@@ -78,3 +78,7 @@ class Playlist(models.Model):
 class Subscription(models.Model):
 	from_channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name="subscriber")
 	to_channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+
+class Likes(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	video = models.ForeignKey(Video, on_delete=models.CASCADE)
