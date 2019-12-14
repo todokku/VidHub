@@ -103,7 +103,7 @@
 <div style="grid-column-start: 1; grid-column-end: 3">
 	<div class="video-title">{{ video.title }}</div>
 	<div id="channel-buttons" class="btn-group">
-		<button class="btn">{{ video.channel.name }}</button>
+		<button class="btn" href="/channel/{{ video.channel.channel_id }}" onclick=";window.location.href=this.getAttribute('href');return false;">{{ video.channel.name }}</button>
 		{% if subscribed %}
 			<button id="subscribe" class="btn js-action-unsubscribe">Unsubscribe</button>
 		{% else %}

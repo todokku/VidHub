@@ -148,7 +148,9 @@ def channel(request, channel_id):
 		subscribed = Subscription.objects.filter(from_channel__exact=loggedin_channel, to_channel__exact=channel).exists()
 	else:
 		subscribed = False
-	return render(request, 'streamer/channel.html', {'channel' : channel, 'videos' : videos, 'subscribed' : subscribed})
+
+	subscriber_count = Subscription.objects.filter(to_channel__exact=channel).count()
+	return render(request, 'streamer/channel.html', {'channel' : channel, 'videos' : videos, 'subscribed' : subscribed, 'subscriber_count' : subscriber_count})
 
 @login_required
 def history(request):
@@ -167,7 +169,9 @@ def subscribe(request):
 		else:
 			subscription = Subscription.objects.get(from_channel__exact=from_channel, to_channel__exact=to_channel)
 			subscription.delete()
-		return JsonResponse({'success' : True})
+
+		subscriber_count = Subscription.objects.filter(to_channel__exact=to_channel).count()
+		return JsonResponse({'success' : True, 'subscriber_count' : subscriber_count})
 	else:
 		raise SuspiciousOperation
 
