@@ -91,6 +91,28 @@
 		color: blue;
 	}
 
+	#recommended-videos {
+		margin-left: 10px;
+	}
+
+	#recommended-videos > ul {
+		list-style: none;
+		padding: 0;
+	}
+
+	.recommended-item-thumb {
+		height: 59px;
+	}
+
+	.recommended-item-thumb > a > img {
+		height: 59px;
+	}
+
+	.recommended-item-main {
+		display: grid;
+		grid-template-columns: 1fr 3fr 1fr;
+	}
+
 </style>
 
 {% endblock head %}
@@ -100,7 +122,7 @@
 
 {% include 'streamer/navbar.html' %}
 
-<div style="grid-column-start: 1; grid-column-end: 3">
+<div style="grid-column-start: 1; grid-column-end: 4">
 	<div class="video-title">{{ video.title }}</div>
 	<div id="channel-buttons" class="btn-group">
 		<button class="btn" href="/channel/{{ video.channel.channel_id }}" onclick=";window.location.href=this.getAttribute('href');return false;">{{ video.channel.name }}</button>
@@ -110,7 +132,8 @@
 			<button id="subscribe" class="btn js-action-subscribe">Subscribe</button>
 		{% endif %}
 	</div>
-
+</div>
+<div style="grid-column-start: 1; grid-column-end: 3">
 	<div class="video-container">
 		<video id="video" class="video-js vjs-default-skin" controls preload="none" width="670" height="377" poster="{{ video.thumbnail.url }}" data-setup="{}">
 		{% if formats %}
@@ -166,7 +189,28 @@
 		</div>
 	</div>
 </div>
-
+<div id="recommended-videos">
+	<ul>
+		{% for video in recommended_videos %}
+			<li>
+				<div class="recommended-item-container">
+					<div class="recommended-item-outer">
+						<div class="recommended-item-main">
+							<div class="recommended-item-thumb">
+								<a href="watch/{{ video.watch_id }}">
+									<img src="{{ video.thumbnail.url }}">
+								</a>
+							</div>
+							<div class="recommended-item-content">
+								<h4><a href="watch/{{ video.watch_id }}">{{ video.title }}</a></h4>
+								<div>{{ video.description }}</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</li>
+		{% endfor %}
+	</ul>
 <div>
 
 </div>

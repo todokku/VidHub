@@ -49,7 +49,8 @@ def video(request, watch_id):
 		loggedin_channel = Channel.objects.get(owner__exact=request.user)
 		subscribed = Subscription.objects.filter(from_channel__exact=loggedin_channel, to_channel__exact=channel).exists()
 	formats = video.format_set.complete().all()
-	return render(request, 'streamer/video.html', {'video' : video, 'formats' : formats, 'is_video_liked' : is_video_liked, 'is_video_disliked': is_video_disliked, 'like_count' : like_count, 'dislike_count' : dislike_count, 'subscribed' : subscribed})
+	recommended_videos = Video.objects.all()
+	return render(request, 'streamer/video.html', {'video' : video, 'formats' : formats, 'is_video_liked' : is_video_liked, 'is_video_disliked': is_video_disliked, 'like_count' : like_count, 'dislike_count' : dislike_count, 'subscribed' : subscribed, 'recommended_videos' : recommended_videos})
 
 @login_required
 def uploadVideo(request):
@@ -150,7 +151,10 @@ def channel(request, channel_id):
 		subscribed = False
 
 	subscriber_count = Subscription.objects.filter(to_channel__exact=channel).count()
-	return render(request, 'streamer/channel.html', {'channel' : channel, 'videos' : videos, 'subscribed' : subscribed, 'subscriber_count' : subscriber_count})
+	view_count = 0
+	for v in videos:
+		view_count += v.view_count
+	return render(request, 'streamer/channel.html', {'channel' : channel, 'videos' : videos, 'subscribed' : subscribed, 'subscriber_count' : subscriber_count, 'view_count' : view_count})
 
 @login_required
 def history(request):
