@@ -86,3 +86,15 @@ class Likes(models.Model):
 class Dislikes(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	video = models.ForeignKey(Video, on_delete=models.CASCADE)
+
+class Comment(models.Model):
+	video = models.ForeignKey(Video, on_delete=models.CASCADE)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	text = models.TextField()
+	created = models.DateTimeField(auto_now_add=True)
+	updated = models.DateTimeField(auto_now=True)
+	active = models.BooleanField(default=True)
+	parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
+
+	class Meta:
+		ordering = ('created',)

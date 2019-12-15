@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 
 from video_encoding.backends.ffmpeg import FFmpegBackend
 
-from .models import Video, Channel, Category, Playlist, PlaylistEntry, Subscription, Likes, Dislikes
+from .models import Video, Channel, Category, Playlist, PlaylistEntry, Subscription, Likes, Dislikes, Comment
 from .forms import VideoForm, EditVideoForm, SignUpForm, LoginForm
 
 def index(request):
@@ -38,6 +38,7 @@ def video(request, watch_id):
 	like_count = Likes.objects.filter(video__exact=video).count()
 	dislike_count = Dislikes.objects.filter(video__exact=video).count()
 	is_video_liked = False
+	is_video_disliked = False
 	subscribed = False
 	if request.user.is_authenticated:
 		channel = Channel.objects.get(owner__exact=request.user)
@@ -50,7 +51,8 @@ def video(request, watch_id):
 		subscribed = Subscription.objects.filter(from_channel__exact=loggedin_channel, to_channel__exact=channel).exists()
 	formats = video.format_set.complete().all()
 	recommended_videos = Video.objects.all()
-	return render(request, 'streamer/video.html', {'video' : video, 'formats' : formats, 'is_video_liked' : is_video_liked, 'is_video_disliked': is_video_disliked, 'like_count' : like_count, 'dislike_count' : dislike_count, 'subscribed' : subscribed, 'recommended_videos' : recommended_videos})
+	comments = Comment.objects.filter(active=True, parent__isnull=True, video__exact=video)
+	return render(request, 'streamer/video.html', {'video' : video, 'formats' : formats, 'is_video_liked' : is_video_liked, 'is_video_disliked': is_video_disliked, 'like_count' : like_count, 'dislike_count' : dislike_count, 'subscribed' : subscribed, 'recommended_videos' : recommended_videos, 'comments' : comments})
 
 @login_required
 def uploadVideo(request):
@@ -214,5 +216,40 @@ def dislike(request):
 		like_count = Likes.objects.filter(video__exact=video).count()
 		dislike_count = Dislikes.objects.filter(video__exact=video).count()
 		return JsonResponse({'success' : True, 'like_count' : like_count, 'dislike_count' : dislike_count, 'was_liked' : was_liked})
+	else:
+		raise SuspiciousOperation
+
+def comment(request):
+	if request.method == 'POST' and request.user.is_authenticated:
+		print(request.POST)
+		if request.POST.get('parent_id'):
+			comment = Comment.objects.create(video=Video.objects.get(pk=request.POST.get('video_id')), user=request.user, text=request.POST.get('text'), parent=Comment.objects.get(pk=request.POST.get('parent_id')))
+			html = """
+			<div style="margin-left: 10px;" class="comment-container">
+				<div class="comment-body">
+					{text}
+				</div>
+				<div class="comment-meta">
+					<div style="margin-right: 10px;"><a href="/channel/{channel_id}">{author}</a></div>
+					<div>{created}</div>
+				</div>
+			</div>
+			""".format(text=comment.text, channel_id=comment.user.channel.channel_id, author=comment.user.channel.name, created=comment.created)
+		else:
+			comment = Comment.objects.create(video=Video.objects.get(pk=request.POST.get('video_id')), user=request.user, text=request.POST.get('text'))
+			html = """
+			<div class="comment-thread">
+				<div class="comment-container">
+					<div class="comment-body">
+						{text}
+					</div>
+					<div class="comment-meta">
+						<div style="margin-right: 10px;"><a href="/channel/{channel_id}">{author}</a></div>
+						<div>{created}</div>
+					</div>
+				</div>
+			</div>
+			""".format(text=comment.text, channel_id=comment.user.channel.channel_id, author=comment.user.channel.name, created=comment.created)
+		return JsonResponse({'success' : True, 'comment' : html})
 	else:
 		raise SuspiciousOperation

@@ -113,6 +113,26 @@
 		grid-template-columns: 1fr 3fr 1fr;
 	}
 
+	.comment-container {
+		margin-bottom: 10px;
+	}
+
+	.comment-container:hover {
+		background-color: white;
+	}
+
+	.comment-body {
+
+	}
+
+	.comment-meta {
+	    display: flex;
+	}
+
+	.d-none {
+		display: none;
+	}
+
 </style>
 
 {% endblock head %}
@@ -176,7 +196,7 @@
 		</div>
 	</div>
 
-	<div>
+	<div style="display: flex; justify-content: space-between;">
 		<div>
 			<div>
 				Uploaded by {{ video.channel.name }} on {{ video.uploaded }}
@@ -188,6 +208,58 @@
 			<div><span id="like_count">{{ like_count }}</span> likes <span id="dislike_count">{{ dislike_count }}</span> dislikes</div>
 		</div>
 	</div>
+
+	<div>
+		<form id="comment-form" method="post" role="form">
+			{% csrf_token %}
+			<div>
+				<textarea name="text"></textarea>
+			</div>
+			<input type="hidden" name="video_id" value="{{ video.pk }}">
+			<input type="hidden" name="parent_id" value="{{ comment.pk }}">
+			<button type="submit">Comment</button>
+		</form>
+	</div>
+	<div id="comments">
+		{% for comment in comments %}
+			<div class="comment-thread">
+				<div class="comment-container">
+					<div class="comment-body">
+						{{ comment.text }}
+					</div>
+					<div class="comment-meta">
+						<div style="margin-right: 10px;"><a href="/channel/{{ comment.channel.channel_id }}">{{ comment.user.channel.name }}</a></div>
+						<div>{{ comment.created }}</div>
+					</div>
+					<button onclick="$(this).next().children().eq(0).toggleClass('d-none');">Reply</button>
+					<div>
+						<form class="reply-form d-none" method="post" role="form">
+							{% csrf_token %}
+							<div>
+								<textarea name="text"></textarea>
+							</div>
+							<input type="hidden" name="video_id" value="{{ video.pk }}">
+							<input type="hidden" name="parent_id" value="{{ comment.pk }}">
+							<button type="submit">Reply</button>
+						</form>
+					</div>
+				</div>
+				<div class="reply-thread">
+					{% for reply in comment.replies.all %}
+						<div style="margin-left: 10px;" class="comment-container">
+							<div class="comment-body">
+								{{ reply.text }}
+							</div>
+							<div class="comment-meta">
+								<div style="margin-right: 10px;"><a href="/channel/{{ reply.channel.channel_id }}">{{ reply.user.channel.name }}</a></div>
+								<div>{{ reply.created }}</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		{% endfor %}
+	</div>
 </div>
 <div id="recommended-videos">
 	<ul>
@@ -197,12 +269,12 @@
 					<div class="recommended-item-outer">
 						<div class="recommended-item-main">
 							<div class="recommended-item-thumb">
-								<a href="watch/{{ video.watch_id }}">
+								<a href="/watch/{{ video.watch_id }}">
 									<img src="{{ video.thumbnail.url }}">
 								</a>
 							</div>
 							<div class="recommended-item-content">
-								<h4><a href="watch/{{ video.watch_id }}">{{ video.title }}</a></h4>
+								<h4><a href="/watch/{{ video.watch_id }}">{{ video.title }}</a></h4>
 								<div>{{ video.description }}</div>
 							</div>
 						</div>
@@ -219,6 +291,47 @@
 
 {% block javascript %}
 	<script type="text/javascript">
+		$('#comment-form').submit(function (e) {
+			e.preventDefault();
+			console.log("COMMENT CLICKED");
+			let csrftoken = $("[name=csrfmiddlewaretoken").val();
+			$.ajax({
+				type: 'POST',
+				context: this,
+				url: '/comment/',
+				beforeSend: function (request) {
+					request.setRequestHeader("X-CSRFToken", csrftoken);
+				},
+				data: $(this).serialize(),
+				dataType: 'json',
+				success: function (data) {
+					console.log(data);
+					$('#comments').prepend(data['comment']);
+				}
+			});
+		});
+
+		$('.reply-form').submit(function (e) {
+			e.preventDefault();
+			console.log("REPlY CLICKED");
+			let csrftoken = $("[name=csrfmiddlewaretoken").val();
+			$.ajax({
+				type: 'POST',
+				context: this,
+				url: '/comment/',
+				beforeSend: function (request) {
+					request.setRequestHeader("X-CSRFToken", csrftoken);
+				},
+				data: $(this).serialize(),
+				dataType: 'json',
+				success: function (data) {
+					console.log(data);
+					$(this).parent().parent().next().prepend(data['comment']);
+					$(this).toggleClass('d-none');
+				}
+			});
+		});
+
 		$('#like').click(function () {
 			console.log("LIKE CLICKED!");
 			let csrftoken = $("[name=csrfmiddlewaretoken]").val();

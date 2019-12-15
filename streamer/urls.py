@@ -17,4 +17,5 @@ urlpatterns = [
     path('subscribe/', views.subscribe, name='subscribe'),
     path('like/', views.like, name='like'),
     path('dislike/', views.dislike, name='dislike'),
+    path('comment/', views.comment, name='comment'),
 ]
