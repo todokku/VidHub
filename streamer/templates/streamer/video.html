@@ -113,16 +113,46 @@
 		grid-template-columns: 1fr 3fr 1fr;
 	}
 
+
+	.comment-form-container {
+	    margin: 10px 0px;
+	}
+
+	.comment-form-container textarea {
+	    box-sizing: border-box;
+		resize: none;
+		width: 100%;
+		overflow: hidden;
+		padding: 5px;
+	}
+
 	.comment-container {
 		margin-bottom: 10px;
 	}
 
-	.comment-container:hover {
-		background-color: white;
+	.comment-body {
+		display: flex;
+	    justify-content: space-between;
+	    align-items: flex-start;
+		padding: 6px;
 	}
 
-	.comment-body {
+	.comment-body:hover {
+		background-color: white;
+		box-shadow: 0 1px 2px #ccc;
+	}
 
+	.comment-content {
+		/*display: flex;
+	    justify-content: space-between;*/
+	}
+
+	.comment-actions {
+		display: none;
+	}
+
+	.comment-body:hover .comment-actions {
+		display: flex;
 	}
 
 	.comment-meta {
@@ -209,15 +239,15 @@
 		</div>
 	</div>
 
-	<div>
+	<div class="comment-form-container">
 		<form id="comment-form" method="post" role="form">
 			{% csrf_token %}
 			<div>
-				<textarea name="text"></textarea>
+				<textarea name="text" rows="1" data-min-rows="1" class="autoExpand"></textarea>
 			</div>
 			<input type="hidden" name="video_id" value="{{ video.pk }}">
 			<input type="hidden" name="parent_id" value="{{ comment.pk }}">
-			<button type="submit">Comment</button>
+			<button type="submit" class="btn">Comment</button>
 		</form>
 	</div>
 	<div id="comments">
@@ -225,22 +255,28 @@
 			<div class="comment-thread">
 				<div class="comment-container">
 					<div class="comment-body">
-						{{ comment.text }}
+						<div class="comment-content">
+							<div class="comment-text">{{ comment.text }}</div>
+							<div class="comment-meta">
+								<div style="margin-right: 10px;"><a href="/channel/{{ comment.channel.channel_id }}">{{ comment.user.channel.name }}</a></div>
+								<div>{{ comment.created }}</div>
+							</div>
+						</div>
+						<div class="comment-actions">
+								<button>Like</button>
+								<button>Dislike</button>
+								<button onclick="$(this).parent().parent().parent().next().children().eq(0).toggleClass('d-none');">Reply</button>
+						</div>
 					</div>
-					<div class="comment-meta">
-						<div style="margin-right: 10px;"><a href="/channel/{{ comment.channel.channel_id }}">{{ comment.user.channel.name }}</a></div>
-						<div>{{ comment.created }}</div>
-					</div>
-					<button onclick="$(this).next().children().eq(0).toggleClass('d-none');">Reply</button>
-					<div>
+					<div class="comment-form-container">
 						<form class="reply-form d-none" method="post" role="form">
 							{% csrf_token %}
 							<div>
-								<textarea name="text"></textarea>
+								<textarea name="text" rows="1" data-min-rows="1" class="autoExpand"></textarea>
 							</div>
 							<input type="hidden" name="video_id" value="{{ video.pk }}">
 							<input type="hidden" name="parent_id" value="{{ comment.pk }}">
-							<button type="submit">Reply</button>
+							<button type="submit" class="btn">Reply</button>
 						</form>
 					</div>
 				</div>
@@ -248,11 +284,18 @@
 					{% for reply in comment.replies.all %}
 						<div style="margin-left: 10px;" class="comment-container">
 							<div class="comment-body">
-								{{ reply.text }}
-							</div>
-							<div class="comment-meta">
-								<div style="margin-right: 10px;"><a href="/channel/{{ reply.channel.channel_id }}">{{ reply.user.channel.name }}</a></div>
-								<div>{{ reply.created }}</div>
+								<div class="comment-content">
+									<div class="comment-text">{{ reply.text }}</div>
+									<div class="comment-meta">
+										<div style="margin-right: 10px;"><a href="/channel/{{ reply.channel.channel_id }}">{{ reply.user.channel.name }}</a></div>
+										<div>{{ reply.created }}</div>
+									</div>
+								</div>
+								<div class="comment-actions">
+									<button>Like</button>
+									<button>Dislike</button>
+									<button onclick="$(this).parent().parent().parent().next().children().eq(0).toggleClass('d-none');">Reply</button>
+								</div>
 							</div>
 						</div>
 					{% endfor %}
