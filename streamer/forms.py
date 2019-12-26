@@ -12,14 +12,19 @@ class VideoForm(forms.ModelForm):
 class EditVideoForm(forms.ModelForm):
 	class Meta:
 		model = Video
-		fields = '__all__'
+		fields = ['title', 'description', 'thumbnail', 'status']
+		widgets = {
+			'description' : forms.Textarea(attrs={'class' : 'autoExpand'}),
+			'thumbnail' : forms.FileInput(),
+			# 'status' : forms.ChoiceField(choices=[('public', 'Public'), ('private', 'Private'), ('unlisted', 'Unlisted')]),
+		}
 
 class SignUpForm(UserCreationForm):
 	channel_name = forms.CharField(max_length=100)
 
 	class Meta:
 		model = User
-		fields = ['username', 'password1', 'password2']
+		fields = ['username', 'password1', 'password2', 'channel_name']
 
 class LoginForm(forms.ModelForm):
 	class Meta:

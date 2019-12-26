@@ -11,8 +11,103 @@
 
 
 <style type="text/css">
+	#initial_upload {
+		grid-column-start: 1;
+	    grid-column-end: 4;
+        display: flex;
+	    flex-direction: column;
+	    align-items: center;
+	    margin-top: 50px;
+	    color: gray;
+	}
+
+	#initial_upload  p {
+		font-size: 2em;
+	    margin: 10px;
+	}
+
+	.d-none {
+		display: none!important;
+	}
+
+	.drop-area {
+		margin-bottom: 10px;
+	}
+
+	.btn {
+		margin: 0;
+		background: transparent;
+		font: 12px arial,sans-serif;
+		height: 2.95em;
+		padding: 0 .91em;
+		outline: 0;
+		font-weight: bold;
+		font-size: 11px;
+		white-space: nowrap;
+		word-wrap: normal;
+		vertical-align: middle;
+		cursor: pointer;
+		text-shadow: 0 1px 0 #fff;
+		background-color: #e0e0e0;
+		background-image: linear-gradient(to bottom,#fff 0,#e0e0e0 100%);
+		border: 1px solid;
+		box-shadow: inset 0 0 1px #fff;
+		color: #555;
+		border-right-style: none;
+		border-radius: 0;
+		border-top-left-radius: 3px;
+		border-bottom-left-radius: 3px;
+		border-color: #ccc;
+		border-bottom-color: #aaa;
+	}
+
+	.btn:hover {
+		border-color: #999;
+		box-shadow: 0 1px 2px rgba(0,0,0,0.25), inset 0 0 3px #fff;
+	}
+
+	#edit_upload {
+		display: grid;
+	    grid-template-columns: 1fr 3fr;
+		grid-column-start: 1;
+		grid-column-end: 4;
+		border: 1px solid #ddd;
+	    background-color: #fff;
+	    padding: 20px;
+	}
+
+	.progress {
+		margin-bottom: 10px;
+	}
+
+	.progress-bar {
+		background-color: #99F;
+		font-size: 14px;
+	    padding: 5px;
+	    box-sizing: border-box;
+	}
+
+	.form-group {
+		margin-bottom: 10px;
+	}
+
+	.form-group > label {
+		display: none;
+	}
+
+	.form-group > input, .form-group > textarea {
+		box-sizing: border-box;
+		width: 100%;
+		resize: none;
+		overflow: hidden;
+	}
+
+	#thumbnail_container {
+		margin-top: 10px;
+	}
+
 	.thumbnail_preview {
-		width: 200px;
+		width: 100px;
 	}
 
 	.btn_thumbnail {
@@ -21,50 +116,69 @@
 		padding: 0;
 	}
 
-	.d-none {
-		display: none;
+	#selected_thumbnail_preview_container > img {
+		width: 200px;
 	}
 
 </style>
 
 <div id='initial_upload'>
+	<h4>DROP VIDEO HERE</h4>
+	<div class="drop-area">
+		<i class="fas fa-upload" style="font-size: 200px;"></i>
+	</div>
 	{# 1. BUTTON TO TRIGGER THE ACTION #}
-	<button type="button" class="btn btn-primary js-upload-video">
-	  <span class="glyphicon glyphicon-cloud-upload"></span> Upload video
-	</button>
+	<button type="button" class="btn btn-primary js-upload-video">Select Video</button>
 
 	{# 2. FILE INPUT TO BE USED BY THE PLUG-IN #}
 	<input id="fileupload" type="file" name="file"
 	       style="display: none;"
 	       data-url="{% url 'streamer:upload' %}"
 	       data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
-	{{ form.category }}
 </div>
 
 <div id='edit_upload' class="d-none">
-	<h1>EDIT TITLE AND SHIT</h1>
-	<div class="progress">
-        <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
-    </div>
-	<form enctype="multipart/form-data" name="edit_form" id="edit_form" method="POST" action="">
-		{% csrf_token %}
-		<input type="hidden" name="watch_id" id="watch_id" value="">
-		<input type="file" name="thumbnail" id="thumbnail" style="display: none;">
-		<input type="hidden" name="selected_thumbnail" id="selected_thumbnail" value="">
-		<div class="form-group">
-			<label for=title>Title</label>
-			<input type="text" name="title" id="title" class="form-control" value="">
+	<div>
+		<div id="selected_thumbnail_preview_container">
+			<i class="fas fa-spinner fa-spin"></i>
 		</div>
-		<div class="form-group">
-			<label for="description">Description</label>
-			<textarea class="form-control" name="description" id="description" rows="5"></textarea>
+		<div>
+			<div>
+				<h5>Upload status:</h5>
+				<div>
+					<span>ACTUAL STATUS</span>
+					<br>
+					Your video will be live at:<br>
+					www.example.com
+				</div>
+			</div>
 		</div>
-		<button type="submit" class="btn btn-primary btn-publish" disabled>Publish</button>
-	</form>
-	<div id="thumbnail_container">
-		<button id="btn_thumbnail_0" class="btn_thumbnail"><img id="thumbnail_0" class="thumbnail_preview" src="" alt="Thumbnail 0"></button>
-		<button id="btn_thumbnail_1" class="btn_thumbnail"><img id="thumbnail_1" class="thumbnail_preview" src="" alt="Thumbnail 1"></button>
-		<button id="btn_thumbnail_2" class="btn_thumbnail"><img id="thumbnail_2" class="thumbnail_preview" src="" alt="Thumbnail 2"></button>
+	</div>
+	<div>
+		<div class="progress">
+	        <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+	    </div>
+		<form enctype="multipart/form-data" name="edit_form" id="edit_form" method="POST" action="">
+			{% csrf_token %}
+			<input type="hidden" name="watch_id" id="watch_id" value="">
+			<input type="file" name="thumbnail" id="thumbnail" style="display: none;">
+			<input type="hidden" name="selected_thumbnail" id="selected_thumbnail" value="">
+			<div class="form-group">
+				<label for=title>Title</label>
+				<input type="text" name="title" id="title" class="form-control" placeholder="TITLE" value="">
+			</div>
+			<div class="form-group">
+				<label for="description">Description</label>
+				<textarea class="form-control autoExpand" data-min-rows="5" name="description" id="description" placeholder="DESCRIPTION" rows="5"></textarea>
+			</div>
+			<button type="submit" class="btn btn-primary btn-publish" disabled>Publish</button>
+		</form>
+		<p>VIDEO THUMBNAILS<p>
+		<div id="thumbnail_container">
+			<button id="btn_thumbnail_0" class="btn_thumbnail"><i class="fas fa-spinner fa-spin"></i></button>
+			<button id="btn_thumbnail_1" class="btn_thumbnail"><i class="fas fa-spinner fa-spin"></i></button>
+			<button id="btn_thumbnail_2" class="btn_thumbnail"><i class="fas fa-spinner fa-spin"></i></button>
+		</div>
 	</div>
 </div>
 
@@ -101,7 +215,6 @@
 	    done: function (e, data) {
 	    	if (data.result.is_valid) {
 	    		$('#watch_id').val(data.result.watch_id);
-	    		$('.btn-publish').removeAttr('disabled');
 	    		$.ajax({
 	    			url: '/upload/',
 	    			type: 'POST',
@@ -113,9 +226,11 @@
 	    			success: function(response) {
 	    				console.log(response);
 	    				$.each(response.thumbnails, function(i, val) {
-	    					$('#thumbnail_' + i).attr('src', val);
+	    					$('#btn_thumbnail_' + i).html('<img id="thumbnail_0" class="thumbnail_preview" src="' + val + '" alt="Thumbnail">');
 	    				});
+	    				$('#selected_thumbnail_preview_container').html('<img src="' + response.thumbnails[0] + '" alt="Thumbnail">');
 	    				$('#selected_thumbnail').val(response.thumbnails[0]);
+	    				$('.btn-publish').removeAttr('disabled');
 	    			},
 	    		});
 	    	}
@@ -126,6 +241,7 @@
 	  	console.log($(this).children('img')[0]);
 	  	img = $(this).children('img')[0]
 	  	$('#selected_thumbnail').val(img.getAttribute('src'));
+	  	$('#selected_thumbnail_preview_container > img')[0].setAttribute('src', img.getAttribute('src'));
 	  });
 
 	});

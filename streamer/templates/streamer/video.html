@@ -91,6 +91,39 @@
 		color: blue;
 	}
 
+	.video-description {
+	    overflow: hidden;
+	    font-size: 1.09em;
+	    line-height: 1.4;
+	    color: #333;
+	}
+
+	.video-description-collapsed {
+		max-height: 90px;
+	}
+
+	.video-description-expanded {
+		max-height: fit-content;
+	}
+
+	.video-descriptio-expander {
+		margin-top: 5px;
+	    border-top: #fff 1px solid;
+	    padding: 5px 0px;
+	    text-align: center;
+	    cursor: pointer;
+	}
+
+	.video-description-container {
+		max-width: 80%;
+	}
+
+	.video-uploader-info {
+	    color: #666;
+	    font-size: 0.9166em;
+	    padding: 5px 0px;
+	}
+
 	#recommended-videos {
 		margin-left: 10px;
 	}
@@ -100,19 +133,32 @@
 		padding: 0;
 	}
 
+	.recommended-item-container {
+		margin-bottom: 10px;
+	    word-break: break-all;
+	}
+
 	.recommended-item-thumb {
 		height: 59px;
 	}
 
 	.recommended-item-thumb > a > img {
+		width: 105px;
 		height: 59px;
 	}
 
 	.recommended-item-main {
 		display: grid;
-		grid-template-columns: 1fr 3fr 1fr;
+		grid-template-columns: 1fr 3fr;
 	}
 
+	.recommended-item-content {
+		padding: 0 10px;
+	}
+
+	.recommended-item-content > h4 {
+		margin: 0px;
+	}
 
 	.comment-form-container {
 	    margin: 10px 0px;
@@ -188,7 +234,7 @@
 		<video id="video" class="video-js vjs-default-skin" controls preload="none" width="670" height="377" poster="{{ video.thumbnail.url }}" data-setup="{}">
 		{% if formats %}
 			{% for format in formats %}
-				<source src="{{ MEDIA_URL }}{{ format.file }}" type="video/{{ format.codec }}" label="{{ format.label }}">
+				<source src="{{ MEDIA_URL }}{{ format.file }}" type="video/mp4" label="{{ format.label }}">
 			{% endfor %}
 		{% else %}
 			<source src="{{ video.file }}" type="video/mp4" label="test">
@@ -227,17 +273,19 @@
 	</div>
 
 	<div style="display: flex; justify-content: space-between;">
-		<div>
-			<div>
-				Uploaded by {{ video.channel.name }} on {{ video.uploaded }}
+		<div class="video-description-container">
+			<div class="video-uploader-info">
+				Uploaded by <a href="/channel/{{ video.channel.channel_id }}">{{ video.channel.name }}</a> on {{ video.uploaded }}
 			</div>
-			<div>{{ video.description }}</div>
+			<div class="video-description video-description-collapsed">{{ video.description }}</div>
 		</div>
 		<div>
 			<div>---------------------</div>
 			<div><span id="like_count">{{ like_count }}</span> likes <span id="dislike_count">{{ dislike_count }}</span> dislikes</div>
 		</div>
 	</div>
+
+	<div class="video-descriptio-expander js-action-expand"><span>Show more</span></div>
 
 	<div class="comment-form-container">
 		<form id="comment-form" method="post" role="form">
@@ -475,6 +523,18 @@
 				}
 			});
 		});
+
+
+		$('.video-descriptio-expander').click(function () {
+			$('.video-description').toggleClass('video-description-collapsed')
+			$('.video-description').toggleClass('video-description-expanded')
+			if ( $('.video-description').hasClass('video-description-collapsed') ) {
+				$(this).html("Show more");
+			} else {
+				$(this).html("Show less");
+			}
+		});
+
 	</script>
 
 

@@ -314,6 +314,7 @@
 	}
 
 	.playlist-item-thumb {
+		width: 288px;
 		height: 162px;
 	}
 
@@ -433,7 +434,7 @@
 			<ul>
 				{% for video in videos %}
 				<li>
-					<a href="watch/{{ video.watch_id }}">
+					<a href="/watch/{{ video.watch_id }}">
 						<div class="playlist-item-main">
 							<img class="playlist-item-thumb" src="{{ video.thumbnail.url }}">
 							<div class="playlist-item-content">

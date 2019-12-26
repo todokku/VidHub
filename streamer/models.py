@@ -8,9 +8,6 @@ from django.contrib.contenttypes.fields import GenericRelation
 from video_encoding.fields import VideoField
 from video_encoding.models import Format
 
-class Profile(models.Model):
-	user = models.OneToOneField(User, on_delete=models.CASCADE)
-
 class Channel(models.Model):
 	name = models.CharField(max_length=100)
 	owner = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -31,6 +28,7 @@ class Video(models.Model):
 		('public', 'public'),
 		('private', 'private'),
 		('unlisted', 'unlisted'),
+		('drafting', 'drafting'),
 	)
 
 	VIDEO_TYPE_CHOICES = (
@@ -52,6 +50,7 @@ class Video(models.Model):
 	thumbnail = models.ImageField(upload_to='thumbnails/', blank=True)
 	file = VideoField(width_field='width', height_field='height', duration_field='duration')
 	format_set = GenericRelation(Format)
+	processed = models.BooleanField(default=False)
 
 	channel = models.ForeignKey(Channel, on_delete=models.CASCADE, blank=True, null=True)
 	category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)

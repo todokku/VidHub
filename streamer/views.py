@@ -21,9 +21,9 @@ def index(request):
 	category_name = request.GET.get('c', None)
 	if category_name:
 		category = Category.objects.get(name__exact=category_name)
-		videos = Video.objects.filter(category__exact=category)
+		videos = Video.objects.filter(category__exact=category, status__exact='public', processed__exact=True)
 	else:
-		videos = Video.objects.all()
+		videos = Video.objects.filter(status__exact='public', processed__exact=True)
 	if search:
 		videos = videos.filter(title__icontains=search)
 	context = { 'videos' : videos, 'categories' : categories }
@@ -50,7 +50,7 @@ def video(request, watch_id):
 		loggedin_channel = Channel.objects.get(owner__exact=request.user)
 		subscribed = Subscription.objects.filter(from_channel__exact=loggedin_channel, to_channel__exact=channel).exists()
 	formats = video.format_set.complete().all()
-	recommended_videos = Video.objects.all()
+	recommended_videos = Video.objects.filter(status__exact='public', processed__exact=True)
 	comments = Comment.objects.filter(active=True, parent__isnull=True, video__exact=video)
 	return render(request, 'streamer/video.html', {'video' : video, 'formats' : formats, 'is_video_liked' : is_video_liked, 'is_video_disliked': is_video_disliked, 'like_count' : like_count, 'dislike_count' : dislike_count, 'subscribed' : subscribed, 'recommended_videos' : recommended_videos, 'comments' : comments})
 
@@ -69,13 +69,13 @@ def uploadVideo(request):
 					os.rename(tmp_thumbnail, server_path)
 					url = settings.MEDIA_URL + filename
 					response['thumbnails'].append(url)
-				print(response)
 				return JsonResponse(response)
 			else:
 				form = VideoForm(request.POST, request.FILES)
 				if form.is_valid():
 					video = form.save()
 					video.channel = Channel.objects.get(owner__exact=request.user.id)
+					video.status = 'drafting'
 					video.save()
 					data = {'is_valid' : True, 'name' : video.file.name, 'url' : video.file.url, 'watch_id' : video.watch_id}
 				else:
@@ -83,7 +83,6 @@ def uploadVideo(request):
 				return JsonResponse(data)
 		else:
 			video = Video.objects.get(watch_id__exact=request.POST.get('watch_id', ''))
-			print(request.POST, request.FILES)
 			if request.POST.get('selected_thumbnail') == "custom":
 				pass
 			else:
@@ -96,6 +95,7 @@ def uploadVideo(request):
 				f.close()
 			video.title = request.POST.get('title')
 			video.description = request.POST.get('description')
+			video.status = 'public'
 			video.save()
 			return redirect("/")
 	else:
@@ -108,35 +108,23 @@ def editVideo(request, watch_id):
 		form = EditVideoForm(request.POST, request.FILES or None, instance=video)
 		if form.is_valid():
 			form.save()
+			return redirect('/dashboard')
 	form = EditVideoForm(instance=video)
-	return render(request, 'streamer/edit_video.html', {'form' : form})
-
-def login(request):
-	print(request)
-	if request.method == 'POST':
-		form = LoginForm(request.POST)
-		if form.is_valid:
-			print(request.POST)
-			user = authenticate(request, username=request.POST.get('username'), password=request.POST.get('password'))
-			if user is not None:
-				login(user)
-				return redirect('/')
-	else:
-		form = LoginForm()
-	return render(request, 'streamer/login.html', {'form' : form})
+	return render(request, 'streamer/edit_video.html', {'form' : form, 'video' : video})
 
 def signup(request):
 	if request.method == 'POST':
 		form = SignUpForm(request.POST)
 		if form.is_valid:
+			print("form valid")
 			user = form.save()
-			user.refresh_from_db()
-			user.save()
+			print(user)
 			channel = Channel.objects.create(name=request.POST.get('channel_name'), owner=user)
-			channel.save()
+			Playlist.objects.create(title='History', owner=channel)
 			raw_password = form.cleaned_data.get('password1')
 			user = authenticate(username=user.username, password=raw_password)
-			login(request, user)
+			if user is not None:
+				login(request, user)
 			return redirect('/')
 	else:
 		form = SignUpForm()
@@ -144,7 +132,7 @@ def signup(request):
 
 def channel(request, channel_id):
 	channel = Channel.objects.get(channel_id__exact=channel_id)
-	videos = Video.objects.filter(channel__exact=channel)
+	videos = Video.objects.filter(channel__exact=channel, status__exact='public', processed__exact=True)
 
 	if request.user.is_authenticated:
 		loggedin_channel = Channel.objects.get(owner__exact=request.user)
@@ -253,3 +241,12 @@ def comment(request):
 		return JsonResponse({'success' : True, 'comment' : html})
 	else:
 		raise SuspiciousOperation
+
+
+@login_required
+def dashboard(request):
+	channel = Channel.objects.get(owner__exact=request.user)
+	print(channel)
+	videos = Video.objects.filter(channel__exact=channel)
+	print(videos)
+	return render(request, 'streamer/dashboard.html', {'videos' : videos})

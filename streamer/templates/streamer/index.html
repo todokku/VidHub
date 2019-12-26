@@ -56,6 +56,10 @@
 		height: 112px;
 	}
 
+	.feed-item-container:hover .feed-item-main a {
+		color: #1c62b9;
+	}
+
 	.feed-item-outer {
 		padding: 15px;
 	    padding-bottom: 5px;
@@ -81,11 +85,16 @@
 		text-decoration: none;
 	}
 
+	.feed-item-main a:hover {
+		text-decoration: underline;
+	}
+
 	.feed-item-thumb {
 		height: 59px;
 	}
 
 	.feed-item-thumb > a > img {
+		max-width: 105px;
 		height: 59px;
 	}
 
@@ -141,6 +150,10 @@
 	.alpha-banner div {
 		display: flex;
 	    align-items: center;
+	    background-color: #0008;
+	    border-radius: 8px;
+	    margin: 5px;
+	    padding: 0px 6px;
 	}
 
 	.alpha-banner a {

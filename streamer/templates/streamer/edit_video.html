@@ -1,16 +1,136 @@
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Edit Video</title>
-</head>
-<body>
 
-<h1>Edit Video</h1>
-<form enctype="multipart/form-data" method="POST" action="">
-{% csrf_token %}
-{{ form.as_p }}
-<input type="submit" value="Save"/>
-</form>
+{% extends 'streamer/base.html' %}
 
-</body>
-</html>
+{% block head %}
+	<title>Dashboard - VidHub</title>
+{% endblock head %}
+
+{% block main_content %}
+
+<style type="text/css">
+	.video-details-container {
+		grid-column-start: 1;
+		grid-column-end: 4;
+	}
+
+	.form-container {
+		display: flex;
+	    justify-content: space-between;
+	}
+
+	.left-column {
+	    width: 100%;
+	    margin-right: 15px;
+	}
+
+	.right-column {
+
+	}
+
+	.right-column img {
+		max-width: 240px;
+	}
+
+	input[name='title'] {
+		width: 100%;
+		box-sizing: border-box;
+		margin-bottom: 5px;
+	}
+
+	.button-container {
+	    display: flex;
+		justify-content: flex-end;
+		margin-bottom: 10px;
+	}
+
+	input[type='submit'] {
+		padding: 10px 20px;
+	    border: none;
+	    background-color: #065fd4;
+	    color: #fff;
+	    font-size: 14px;
+	    line-height: 20px;
+	    font-weight: 500;
+	}
+
+	textarea {
+		resize: none;
+	    width: 100%;
+	    box-sizing: border-box;
+	}
+
+	.thumbnail-container {
+		padding: 20px;
+	    background-color: #fff9;
+	    border: 1px #3336 solid;
+        margin-right: 5px;
+	}
+
+	.thumbnail-container img {
+		max-width: 120px;
+	}
+
+</style>
+
+{% include 'streamer/navbar.html' %}
+
+<div class="video-details-container">
+	<h1>Video details</h1>
+	<form enctype="multipart/form-data" method="POST" action="">
+		<div class="button-container"><input type="submit" value="Save"/></div>
+		<div class="form-container">
+			<div class="left-column">
+				{% csrf_token %}
+				{{ form.title }}
+				{{ form.description }}
+				<div style="display: flex;">
+					<div class="thumbnail-container">
+						<div>Upload a custom thumbnail</div>
+						<div>
+							<input type="file" name="thumbnail" accept="image/*" id="id_thumbnail" style="display: none;" />
+							<input type="button" value="Browse..." onclick="document.getElementById('id_thumbnail').click();" />
+						</div>
+					</div>
+					<div class="thumbnail-container">
+						<div>Visibilty</div>
+						<div>
+							<select name="status" id="id_status">
+							  <option value="public" {% if video.status == "public" %}selected{% endif %} >Public</option>
+							  <option value="unlisted" {% if video.status == "unlisted" %}selected{% endif %}>Unlisted</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="right-column">
+				<div>
+					<img src="/media/{{ form.thumbnail.value }}">
+				</div>
+				<div style="padding: 10px;
+    background-color: #fff9;
+    border: 1px #3335 solid;
+    margin-bottom: 5px;">
+					<div>
+						Video link
+					</div>
+					<div>
+						<a href="href=/watch/{{ video.watch_id }}">watch/{{ video.watch_id }}</a>
+					</div>
+				</div>
+				<div style="padding: 10px;
+    background-color: #fff9;
+    border: 1px #3335 solid;">
+					<div>
+						{% if video.processed %}
+							Video has been processed
+						{% else %}
+							Video is beeing processed
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+{% endblock main_content %}
