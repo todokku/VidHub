@@ -1,0 +1,69 @@
+{% extends 'streamer/base.html' %}
+
+{% block head %}
+	<title>Dashboard - VidHub</title>
+{% endblock head %}
+
+{% block main_content %}
+
+{% include 'streamer/navbar.html' %}
+
+<style type="text/css">
+
+	.video-list {
+		grid-column-start: 1;
+		grid-column-end: 4;
+		border-collapse: collapse;
+	}
+
+	.video-list th, td {
+		text-align: center;
+	}
+
+	.video-list td {
+		border: 1px solid #ddd;
+		height: 60px;
+	}
+
+	.d-hidden {
+		display: hidden;
+	}
+	
+
+</style>
+
+<h1>Uploaded Videos</h1>
+
+<table class="video-list">
+	<thead>
+		<tr>
+			<!-- <th></th> -->
+			<th>Video</th>
+			<th>Visibility</th>
+			<th>Date</th>
+			<th>Views</th>
+			<th>Comments</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for video in videos %}
+			<tr>
+				{% if video.thumbnail %}
+					<td style="background: url({{ video.thumbnail.url }}) left center no-repeat; background-size: 120px auto; padding-left: 58px;">
+						<div><a href="/dashboard/{{ video.watch_id }}">{{ video.title }}</a></div>
+					</td>
+				{% else %}
+					<td>
+						<div><a href="/dashboard/{{ video.watch_id }}">{{ video.title|default:"NO TITLE" }}</a></div>
+					</td>
+				{% endif %}
+				<td>{{ video.status }}</td>
+				<td>{{ video.uploaded }}</td>
+				<td>{{ video.view_count }}</td>
+				<td>N/A</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+{% endblock %}
