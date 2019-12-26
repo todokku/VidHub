@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
+from .config import Config
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -24,13 +26,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = os.environ.get('DJANGO_ENV') == 'dev'
 
 # SECURITY WARNING: keep the secret key used in production secret!
-if DEBUG:
-	SECRET_KEY = '4p#&7+l#ws*s^rm(o&qh0ph6h3p*n2wdmkmy2i&#q$5jtkm1m5'
-else:
-	with open(os.path.join(BASE_DIR, 'secret_key')) as f:
-		SECRET_KEY = f.read().strip()
 
-ALLOWED_HOSTS = ['vidhub']
+SECRET_KEY = Config.SECRET_KEY
+
+ALLOWED_HOSTS = Config.ALLOWED_HOSTS
 
 
 # Application definition
@@ -83,16 +82,7 @@ WSGI_APPLICATION = 'vidhub.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-	'default': {
-		'ENGINE': 'django.db.backends.mysql',
-		'NAME': 'vidhub',
-		'USER': 'vidhub',
-		'PASSWORD': 'sommer',
-		'HOST': '127.0.0.1',
-		'PORT': '3306',
-	}
-}
+DATABASES = Config.DATABASES
 
 
 # Password validation
