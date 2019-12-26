@@ -66,7 +66,7 @@ def uploadVideo(request):
 					tmp_thumbnail = FFmpegBackend().get_thumbnail(video_path=video.file.path, at_time=timestamp)
 					filename = 'thumbnail_{}_{}.jpg'.format(video.watch_id, i)
 					server_path = os.path.join(settings.MEDIA_ROOT, filename)
-					os.rename(tmp_thumbnail, server_path)
+					shutil.move(tmp_thumbnail, server_path)
 					url = settings.MEDIA_URL + filename
 					response['thumbnails'].append(url)
 				return JsonResponse(response)
