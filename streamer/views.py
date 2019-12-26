@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
