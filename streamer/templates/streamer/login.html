@@ -82,15 +82,28 @@
 	    background-image: linear-gradient(top,#4d90fe,#4787ed);
 	}
 
+	.errorlist {
+		list-style: none;
+		padding: 0px;
+		margin: 0px;
+		color: red;
+		background-color: #fff;
+		border: 1px #3334 solid;
+	}
+
+	.errorlist li {
+
+	}
+
 </style>
 
 
   <div class="login-container">
 	  <div class="login-header">
 	  	<h2>Sign in to VidHub!</h2>
-	  	<p><strong>Join the largest worldwide video community!</strong></p>
+	  	<!-- <p><strong>Join the largest worldwide video community!</strong></p> -->
 
-	  	<p>Get full access to VidHub with your account:</p>
+	  	<p><strong>Get full access to VidHub with your account:</strong></p>
 
 	  	<ul>
 			<li>Upload and share your own videos with the world</li>
@@ -102,6 +115,7 @@
 	  	  <h2>Sign in</h2>
 		  <form method="post">
 			{% csrf_token %}
+			{{ form.non_field_errors }}
 			<p>
 				<label>VidHub username</label>
 				{{ form.username }}
