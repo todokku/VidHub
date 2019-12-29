@@ -144,6 +144,9 @@ def signup(request):
 		form = SignUpForm()
 	return render(request, 'streamer/signup.html', {'form' : form})
 
+def signup_disabled(request):
+	return render(request, 'streamer/signup_disabled.html')
+
 def channel(request, channel_id):
 	channel = Channel.objects.get(channel_id__exact=channel_id)
 	videos = Video.objects.filter(channel__exact=channel, status__exact='public', processed__exact=True)
