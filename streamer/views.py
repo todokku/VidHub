@@ -103,6 +103,7 @@ def uploadVideo(request):
 		form = VideoForm()
 		return render(request, 'streamer/upload.html', {'form' : form, 'initial_upload' : True})
 
+@login_required
 def editVideo(request, watch_id):
 	video = get_object_or_404(Video, watch_id__exact=watch_id)
 	if request.method == 'POST':
@@ -113,6 +114,18 @@ def editVideo(request, watch_id):
 	form = EditVideoForm(instance=video)
 	return render(request, 'streamer/edit_video.html', {'form' : form, 'video' : video})
 
+@login_required
+def deleteVideo(request):
+	if request.method == 'POST':
+		video = Video.objects.get(watch_id__exact=request.POST.get('watch_id'))
+		channel = Channel.objects.get(owner__exact=request.user)
+		if video.channel == channel:
+			video.delete()
+			return JsonResponse({"success" : True})
+		else:
+			raise SuspiciousOperation
+	else:
+		raise SuspiciousOperation
 def signup(request):
 	if request.method == 'POST':
 		form = SignUpForm(request.POST)
@@ -247,7 +260,5 @@ def comment(request):
 @login_required
 def dashboard(request):
 	channel = Channel.objects.get(owner__exact=request.user)
-	print(channel)
 	videos = Video.objects.filter(channel__exact=channel)
-	print(videos)
 	return render(request, 'streamer/dashboard.html', {'videos' : videos})

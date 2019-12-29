@@ -19,4 +19,5 @@ urlpatterns = [
     path('comment/', views.comment, name='comment'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('dashboard/<watch_id>', views.editVideo, name='edit_video'),
+    path('dashboard/delete/', views.deleteVideo, name='delete_video'),
 ]
