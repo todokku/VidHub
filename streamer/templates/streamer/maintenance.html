@@ -1,0 +1,19 @@
+{% extends 'streamer/base.html' %}
+{% block head %}
+	<title>We'll be back soon! - VidHub</title>
+{% endblock %}
+
+{% block main_content %}
+	<div style="
+	margin-top: 5em;
+	grid-column-end: 4;
+    grid-column-start: 1;
+    text-align: center;">
+		<img style="width: 50%;" src="/static/img/vidhub.svg.png">
+		<div style="
+			font-size: 5em;
+    		opacity: 0.8;">
+    		VidHub is offline for maintenance.<br>We'll be back soon!
+    	</div>
+	</div>
+{% endblock %}
