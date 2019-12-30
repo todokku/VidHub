@@ -12,3 +12,4 @@ class Config:
 			'PORT': '3306',
 		}
 	}
+	MAINTENANCE_MODE = None

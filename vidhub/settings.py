@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_ENV') == 'dev'
+DEBUG = Config.DEBUG
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
 	'django_rq',
 	'video_encoding',
+	'maintenance_mode',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +56,7 @@ MIDDLEWARE = [
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'maintenance_mode.middleware.MaintenanceModeMiddleware',
 ]
 
 ROOT_URLCONF = 'vidhub.urls'
@@ -71,6 +73,7 @@ TEMPLATES = [
 				'django.contrib.auth.context_processors.auth',
 				'django.contrib.messages.context_processors.messages',
 				'django.template.context_processors.media',
+				'maintenance_mode.context_processors.maintenance_mode',
 			],
 		},
 	},
@@ -199,4 +202,5 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login/'
 LOGOUT_REDIRECT_URL = '/'
 
-#CSRF_COOKIE_DOMAIN = "vidhub"
+MAINTENANCE_MODE = Config.MAINTENANCE_MODE
+MAINTENANCE_MODE_TEMPLATE = 'streamer/maintenance.html'

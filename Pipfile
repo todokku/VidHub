@@ -11,6 +11,7 @@ mysqlclient = "*"
 django = "*"
 django-video-encoding = "*"
 django-rq = "*"
+django-maintenance-mode = "*"
 
 [requires]
 python_version = "3.7"
