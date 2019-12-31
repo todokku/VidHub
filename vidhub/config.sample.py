@@ -13,3 +13,4 @@ class Config:
 		}
 	}
 	MAINTENANCE_MODE = None
+	DEBUG = True
