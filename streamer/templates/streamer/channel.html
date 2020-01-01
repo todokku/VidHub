@@ -1,4 +1,5 @@
 {% extends 'streamer/base.html' %}
+{% load static %}
 
 {% block head %}
 	<title>{{ channel.name }} - TRACLE</title>
@@ -392,7 +393,7 @@
 <div class="channel-header-container">
 	<div class="channel-header-upper">
 		<div class="channel-header-upper-left">
-			<img src="https://dummyimage.com/55x55/aaaaaa/f00.png&text=AVATAR">
+			<img style="width: 55px;" src="{% static 'img/avatar.png' %}">
 			<h1>{{ channel.name }}</h1>
 				{% if subscribed %}
 					<button id="subscribe" class="js-action-unsubscribe">

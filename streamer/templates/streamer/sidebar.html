@@ -1,3 +1,5 @@
+{% load static %}
+
 <style type="text/css">
     #sidebar {
         color: #ededed;
@@ -147,6 +149,10 @@
         padding: 10px;
     }
 
+    .sidebar-profile-avatar img {
+        width: 96px;
+    }
+
     .sidebar-profile-items {
         list-style: none;
         padding-left: 0px;
@@ -170,7 +176,7 @@
         </div>
         <div class="sidebar-profile">
             <div class="sidebar-profile-avatar">
-                <img src="https://dummyimage.com/96x96/aaaaaa/f00.png&text=AVATAR">
+                <img src="{% static 'img/avatar.png' %}">
             </div>
             <ul class="sidebar-profile-items">
                 <li><a href="channel/{{ channel.channel_id }}">My Channel</a></li>
