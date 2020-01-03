@@ -12,6 +12,7 @@ django = "*"
 django-video-encoding = "*"
 django-rq = "*"
 django-maintenance-mode = "*"
+python-magic = "*"
 
 [requires]
 python_version = "3.7"
