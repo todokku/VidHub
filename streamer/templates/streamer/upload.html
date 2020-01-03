@@ -131,6 +131,12 @@
 		margin-top: 4em;
 	}
 
+	.form-error {
+		color: red;
+	    font-size: 1.1em;
+	    padding-bottom: 0.3em;
+	}
+
 </style>
 
 <div id='initial_upload'>
@@ -149,6 +155,13 @@
 </div>
 
 <div id='edit_upload' class="d-none">
+	<div style="
+	grid-column-start: 1;
+    grid-column-end: 3;
+    text-align: center;
+    font-weight: 600;">
+		PLEASE DON'T CLOSE THIS WINDOW
+	</div>
 	<div>
 		<div id="selected_thumbnail_preview_container">
 			<i class="fas fa-spinner fa-spin"></i>
@@ -156,12 +169,7 @@
 		<div>
 			<div>
 				<h5>Upload status:</h5>
-				<div>
-					<span>ACTUAL STATUS</span>
-					<br>
-					Your video will be live at:<br>
-					www.example.com
-				</div>
+				<div id="upload_status"></div>
 			</div>
 		</div>
 	</div>
@@ -176,6 +184,7 @@
 			<input type="hidden" name="selected_thumbnail" id="selected_thumbnail" value="">
 			<div class="form-group">
 				<label for=title>Title</label>
+				<div id="title-error" class="form-error d-none">Please provide a title for your video</div>
 				<input type="text" name="title" id="title" class="form-control" placeholder="TITLE" value="">
 			</div>
 			<div class="form-group">
@@ -220,6 +229,7 @@
 	    start: function (e) {
 	    	$('#initial_upload').addClass('d-none');
 	    	$('#edit_upload').removeClass('d-none');
+	    	$('#upload_status').html('UPLOADING VIDEO...');
 	    },
 	    progressall: function (e, data) {
 	    	$('#watch_id').html(data.watch_id)
@@ -240,6 +250,9 @@
 	    				'watch_id' : $('#watch_id').val(),
 	    				'get_thumbnail' : true,
 	    			},
+	    			start: function(e) {
+	    				$('#upload_status').html('GENERATING THUMBNAILS');
+	    			},
 	    			success: function(response) {
 	    				$.each(response.thumbnails, function(i, val) {
 	    					$('#btn_thumbnail_' + i).html('<img id="thumbnail_0" class="thumbnail_preview" src="' + val + '" alt="Thumbnail">');
@@ -247,6 +260,7 @@
 	    				$('#selected_thumbnail_preview_container').html('<img src="' + response.thumbnails[0] + '" alt="Thumbnail">');
 	    				$('#selected_thumbnail').val(response.thumbnails[0]);
 	    				$('.btn-publish').removeAttr('disabled');
+	    				$('#upload_status').html('DONE');
 	    			},
 	    		});
 	    	} else {
@@ -262,6 +276,14 @@
 	  	$('#selected_thumbnail_preview_container > img')[0].setAttribute('src', img.getAttribute('src'));
 	  });
 
+	});
+
+	$('#edit_form').submit(function () {
+		if (!$('#title').val()) {
+			$('#title-error').removeClass('d-none');
+			return false;
+		}
+		return true;
 	});
 </script>
 

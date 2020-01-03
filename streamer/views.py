@@ -80,6 +80,8 @@ def uploadVideo(request):
 				return JsonResponse(response)
 			else:
 				form = VideoForm(request.POST, request.FILES)
+				if not request.FILES.get('file').content_type.startswith('video/'):
+					return JsonResponse({'is_valid' : False})
 				if form.is_valid():
 					try:
 						video = form.save()
