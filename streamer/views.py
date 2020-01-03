@@ -1,5 +1,7 @@
 import os
 import shutil
+import logging
+import magic
 
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
@@ -13,9 +15,13 @@ from django.contrib.auth.decorators import login_required
 
 from video_encoding.backends.ffmpeg import FFmpegBackend
 from video_encoding.exceptions import FFmpegError
+from video_encoding import tasks
+from django_rq import enqueue
 
 from .models import Video, Channel, Category, Playlist, PlaylistEntry, Subscription, Likes, Dislikes, Comment
 from .forms import VideoForm, EditVideoForm, SignUpForm, LoginForm
+
+logger =logging.getLogger('django')
 
 def index(request):
 	categories = Category.objects.all()
@@ -84,6 +90,14 @@ def uploadVideo(request):
 					video.status = 'drafting'
 					video.save()
 
+					logger.info('VALIDATING MIME-TYPE: {}'.format(video.file.path))
+					f = os.path.join(settings.MEDIA_ROOT, video.file.name)
+					if not magic.from_file(f, mime=True).startswith('video/'):
+						logger.info('FILE INVALID: {}'.format(video.file.path))
+						video.delete()
+					else:
+						logger.info('FILE VALID: {}'.format(video.file.path))
+
 					try:
 						Video.objects.get(pk=video.pk)
 						data = {'is_valid' : True, 'name' : video.file.name, 'url' : video.file.url, 'watch_id' : video.watch_id}
@@ -111,6 +125,11 @@ def uploadVideo(request):
 			video.description = request.POST.get('description')
 			video.status = 'public'
 			video.save()
+			logger.info('START CONVERTING' + video.file.path)
+			enqueue(tasks.convert_all_videos,
+					video._meta.app_label,
+					video._meta.model_name,
+					video.pk)
 			return redirect("/")
 	else:
 		form = VideoForm()

@@ -207,3 +207,19 @@ MAINTENANCE_MODE_TEMPLATE = Config.MAINTENANCE_MODE_TEMPLATE
 MAINTENANCE_MODE_IGNORE_ADMIN_SITE = Config.MAINTENANCE_MODE_IGNORE_ADMIN_SITE
 MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER = Config.MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
+}
+
