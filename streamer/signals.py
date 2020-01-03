@@ -1,9 +1,11 @@
 import random
 import string
 import os
+import magic
 
+from django.conf import settings
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 
 from django_rq import enqueue
@@ -15,11 +17,27 @@ from .models import Video, Channel, Playlist
 @receiver(post_save, sender=Video)
 def convert_video(sender, instance, created, **kwargs):
 	if created:
-		enqueue(tasks.convert_all_videos,
-				instance._meta.app_label,
-				instance._meta.model_name,
-				instance.pk)
+		f = os.path.join(settings.MEDIA_ROOT, instance.file.name)
+		if not magic.from_file(f, mime=True).startswith('video/'):
+			instance.delete()
+		else:
+			enqueue(tasks.convert_all_videos,
+					instance._meta.app_label,
+					instance._meta.model_name,
+					instance.pk)
 
+@receiver(post_delete, sender=Video)
+def delete_video_files(sender, instance, **kwargs):
+	if instance.file:
+		if os.path.isfile(instance.file.path):
+			os.remove(instance.file.path)
+	for f in instance.format_set.all():
+		if f.file:
+			if os.path.isfile(f.file.path):
+				os.remove(f.file.path)
+	if instance.thumbnail:
+		if os.path.isfile(instance.thumbnail.path):
+			os.remove(instance.thumbnail.path)
 
 def generate_id(length):
 	chars = string.ascii_letters + string.digits
@@ -43,8 +61,6 @@ def pre_save_create_channel_id(sender, instance, **kwargs):
 
 @receiver(tasks.video_convert_done)
 def on_video_convert_done(video, **kwargs):
-	print('Video converted:')
-	print(video)
 	video.processed = True
 	video.save()
 

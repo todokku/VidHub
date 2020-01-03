@@ -12,6 +12,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 
 from video_encoding.backends.ffmpeg import FFmpegBackend
+from video_encoding.exceptions import FFmpegError
 
 from .models import Video, Channel, Category, Playlist, PlaylistEntry, Subscription, Likes, Dislikes, Comment
 from .forms import VideoForm, EditVideoForm, SignUpForm, LoginForm
@@ -74,13 +75,22 @@ def uploadVideo(request):
 			else:
 				form = VideoForm(request.POST, request.FILES)
 				if form.is_valid():
-					video = form.save()
+					try:
+						video = form.save()
+					except FFmpegError as e:
+						os.remove(os.path.join(settings.MEDIA_ROOT, form.files['file'].name))
+						return JsonResponse({'is_valid' : False})
 					video.channel = Channel.objects.get(owner__exact=request.user.id)
 					video.status = 'drafting'
 					video.save()
-					data = {'is_valid' : True, 'name' : video.file.name, 'url' : video.file.url, 'watch_id' : video.watch_id}
+
+					try:
+						Video.objects.get(pk=video.pk)
+						data = {'is_valid' : True, 'name' : video.file.name, 'url' : video.file.url, 'watch_id' : video.watch_id}
+					except Exception as e:
+						data = {'is_valid' : False}
 				else:
-					data = {'is_valid' : False}	
+					data = {'is_valid' : False}
 				return JsonResponse(data)
 		else:
 			video = Video.objects.get(watch_id__exact=request.POST.get('watch_id', ''))
@@ -88,12 +98,15 @@ def uploadVideo(request):
 				pass
 			else:
 				filename = os.path.basename(request.POST.get('selected_thumbnail'))
-				print(filename)
-				full_path = os.path.join(settings.MEDIA_ROOT, filename) 
-				print(full_path)
+				full_path = os.path.join(settings.MEDIA_ROOT, filename)
 				f = open(full_path, 'rb')
 				video.thumbnail.save(filename, ImageFile(f), save=False)
 				f.close()
+				for i in range(3):
+					name = '{}{}.jpg'.format(filename.split('.')[0][:-1], i)
+					path = os.path.join(settings.MEDIA_ROOT, name)
+					if os.path.isfile(path):
+						os.remove(path)
 			video.title = request.POST.get('title')
 			video.description = request.POST.get('description')
 			video.status = 'public'
@@ -130,9 +143,7 @@ def signup(request):
 	if request.method == 'POST':
 		form = SignUpForm(request.POST)
 		if form.is_valid:
-			print("form valid")
 			user = form.save()
-			print(user)
 			channel = Channel.objects.create(name=request.POST.get('channel_name'), owner=user)
 			Playlist.objects.create(title='History', owner=channel)
 			raw_password = form.cleaned_data.get('password1')
@@ -215,7 +226,6 @@ def dislike(request):
 				was_liked = Likes.objects.filter(user__exact=request.user, video__exact=video).delete()[0] > 0
 				Dislikes.objects.create(video=video, user=request.user)
 		elif request.POST.get('action') == 'undislike':
-			print("UNDISLIKE")
 			Dislikes.objects.filter(user__exact=request.user, video__exact=video).delete()
 
 		like_count = Likes.objects.filter(video__exact=video).count()
@@ -226,7 +236,6 @@ def dislike(request):
 
 def comment(request):
 	if request.method == 'POST' and request.user.is_authenticated:
-		print(request.POST)
 		if request.POST.get('parent_id'):
 			comment = Comment.objects.create(video=Video.objects.get(pk=request.POST.get('video_id')), user=request.user, text=request.POST.get('text'), parent=Comment.objects.get(pk=request.POST.get('parent_id')))
 			html = """

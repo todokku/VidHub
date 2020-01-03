@@ -120,6 +120,17 @@
 		width: 200px;
 	}
 
+	#upload-failed {
+		grid-column-start: 1;
+		grid-column-end: 4;
+		border: 1px solid #ddd;
+		background-color: #fff;
+		padding: 20px;
+		text-align: center;
+		font-size: 1.4em;
+		margin-top: 4em;
+	}
+
 </style>
 
 <div id='initial_upload'>
@@ -131,7 +142,7 @@
 	<button type="button" class="btn btn-primary js-upload-video">Select Video</button>
 
 	{# 2. FILE INPUT TO BE USED BY THE PLUG-IN #}
-	<input id="fileupload" type="file" name="file"
+	<input id="fileupload" type="file" name="file" accept="video/*"
 	       style="display: none;"
 	       data-url="{% url 'streamer:upload' %}"
 	       data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
@@ -182,6 +193,12 @@
 	</div>
 </div>
 
+<div id="upload-failed" class="d-none">
+	<div>
+		The file you are uploading may not be a valid video file.
+	</div>
+</div>
+
 {% endblock main_content %}
 
 {%block javascript %}
@@ -202,7 +219,7 @@
 	    dataType: 'json',
 	    start: function (e) {
 	    	$('#initial_upload').addClass('d-none');
-	        $('#edit_upload').removeClass('d-none');
+	    	$('#edit_upload').removeClass('d-none');
 	    },
 	    progressall: function (e, data) {
 	    	$('#watch_id').html(data.watch_id)
@@ -224,7 +241,6 @@
 	    				'get_thumbnail' : true,
 	    			},
 	    			success: function(response) {
-	    				console.log(response);
 	    				$.each(response.thumbnails, function(i, val) {
 	    					$('#btn_thumbnail_' + i).html('<img id="thumbnail_0" class="thumbnail_preview" src="' + val + '" alt="Thumbnail">');
 	    				});
@@ -233,12 +249,14 @@
 	    				$('.btn-publish').removeAttr('disabled');
 	    			},
 	    		});
+	    	} else {
+	    		$('#edit_upload').addClass('d-none');
+	    		$('#upload-failed').removeClass('d-none');
 	    	}
 	    }
 	  });
 
 	  $('.btn_thumbnail').click(function () {
-	  	console.log($(this).children('img')[0]);
 	  	img = $(this).children('img')[0]
 	  	$('#selected_thumbnail').val(img.getAttribute('src'));
 	  	$('#selected_thumbnail_preview_container > img')[0].setAttribute('src', img.getAttribute('src'));
