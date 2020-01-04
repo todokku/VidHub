@@ -195,6 +195,14 @@
 				<label for="description">Description</label>
 				<textarea class="form-control autoExpand" data-min-rows="5" name="description" id="description" placeholder="DESCRIPTION" rows="5"></textarea>
 			</div>
+			<div class="form-group">
+				<div>Select category:</div>
+				<select name="category" id="id_categorty">
+					{% for cat in categories %}
+						<option value="{{ cat.pk }}">{{ cat.title }}</option>
+					{% endfor %}
+				</select>
+			</div>
 			<button type="submit" class="btn btn-primary btn-publish" disabled>Publish</button>
 		</form>
 		<p>VIDEO THUMBNAILS<p>

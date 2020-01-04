@@ -126,6 +126,7 @@ def uploadVideo(request):
 			video.title = request.POST.get('title')
 			video.description = request.POST.get('description')
 			video.status = 'public'
+			video.category = Category.objects.get(pk=request.POST.get('category'))
 			video.save()
 			logger.info('START CONVERTING' + video.file.path)
 			enqueue(tasks.convert_all_videos,
@@ -135,7 +136,8 @@ def uploadVideo(request):
 			return redirect("/")
 	else:
 		form = VideoForm()
-		return render(request, 'streamer/upload.html', {'form' : form, 'initial_upload' : True})
+		categories = Category.objects.all()
+		return render(request, 'streamer/upload.html', {'form' : form, 'initial_upload' : True, 'categories' : categories})
 
 @login_required
 def editVideo(request, watch_id):
