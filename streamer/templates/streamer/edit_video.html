@@ -77,7 +77,18 @@
 <div class="video-details-container">
 	<h1>Video details</h1>
 	<form enctype="multipart/form-data" method="POST" action="">
-		<div class="button-container"><input type="submit" value="Save"/></div>
+		{% if video.processed %}
+			<div class="button-container"><input type="submit" value="Save"/></div>
+		{% else %}
+			<div style="
+			padding: 5px 5px;
+		    background: #fff;
+		    margin-bottom: 10px;
+		    font-size: 1.2em;
+		    font-weight: 600;">
+				This video is still beeing processed. You can edit the properties after processing has finished.
+			</div>
+		{% endif %}
 		<div class="form-container">
 			<div class="left-column">
 				{% csrf_token %}
