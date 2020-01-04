@@ -169,7 +169,11 @@
 
 <div id='feed'>
 	<div id='feed-header'>
-		<h2>From TRACLE<h2>
+		{% if category %}
+			<h2>{{ category.title }}</h2>
+		{% else %}
+			<h2>From TRACLE<h2>
+		{% endif %}
 	</div>
 	<div id='feed-main'>
 		{% if videos %}
@@ -207,7 +211,10 @@
 			{% endfor %}
 			</ul>
 		{% else %}
-			<p>Wow! Such empty!</p>
+			<div style="text-align: center;">
+				<img style="padding-top: 10px;" src="{% static '/img/doge.png' %}">
+				<p>Wow! Such empty!</p>
+			</div>
 		{% endif %}
 	</div>
 </div>

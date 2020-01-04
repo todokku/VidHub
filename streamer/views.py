@@ -25,16 +25,18 @@ logger =logging.getLogger('django')
 
 def index(request):
 	categories = Category.objects.all()
+	context = {'categories' : categories }
 	search=request.GET.get('q', None)
 	category_name = request.GET.get('c', None)
 	if category_name:
 		category = Category.objects.get(name__exact=category_name)
 		videos = Video.objects.filter(category__exact=category, status__exact='public', processed__exact=True)
+		context['category'] = category
 	else:
 		videos = Video.objects.filter(status__exact='public', processed__exact=True)
 	if search:
 		videos = videos.filter(title__icontains=search)
-	context = { 'videos' : videos, 'categories' : categories }
+	context['videos'] = videos
 	if request.user.is_authenticated:
 		context['channel'] = Channel.objects.get(owner__exact=request.user)
 	return render(request, 'streamer/index.html', context)
