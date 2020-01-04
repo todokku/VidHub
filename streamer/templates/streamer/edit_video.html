@@ -122,7 +122,11 @@
     border: 1px #3335 solid;
     margin-bottom: 5px;">
 					<div>
-						Video link
+						{% if video.processed %}
+							Video link:
+						{% else %}
+							Video will be available at:
+						{% endif %}
 					</div>
 					<div>
 						<a href="/watch/{{ video.watch_id }}">watch/{{ video.watch_id }}</a>

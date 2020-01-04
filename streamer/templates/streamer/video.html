@@ -218,139 +218,152 @@
 
 {% include 'streamer/navbar.html' %}
 
-<div style="grid-column-start: 1; grid-column-end: 4">
-	<div class="video-title">{{ video.title }}</div>
-	<div id="channel-buttons" class="btn-group">
-		<button class="btn" href="/channel/{{ video.channel.channel_id }}" onclick=";window.location.href=this.getAttribute('href');return false;">{{ video.channel.name }}</button>
-		{% if subscribed %}
-			<button id="subscribe" class="btn js-action-unsubscribe">Unsubscribe</button>
-		{% else %}
-			<button id="subscribe" class="btn js-action-subscribe">Subscribe</button>
-		{% endif %}
+{% if video.processed %}
+	<div style="grid-column-start: 1; grid-column-end: 4">
+		<div class="video-title">{{ video.title }}</div>
+		<div id="channel-buttons" class="btn-group">
+			<button class="btn" href="/channel/{{ video.channel.channel_id }}" onclick=";window.location.href=this.getAttribute('href');return false;">{{ video.channel.name }}</button>
+			{% if subscribed %}
+				<button id="subscribe" class="btn js-action-unsubscribe">Unsubscribe</button>
+			{% else %}
+				<button id="subscribe" class="btn js-action-subscribe">Subscribe</button>
+			{% endif %}
+		</div>
 	</div>
-</div>
+{% endif %}
 <div style="grid-column-start: 1; grid-column-end: 3">
-	<div class="video-container">
-		<video id="video" class="video-js vjs-default-skin" controls preload="none" width="670" height="377" poster="{{ video.thumbnail.url }}" data-setup="{}">
-		{% if formats %}
-			{% for format in formats %}
-				<source src="{{ MEDIA_URL }}{{ format.file }}" type="video/mp4" label="{{ format.label }}">
-			{% endfor %}
-		{% else %}
-			<source src="{{ video.file }}" type="video/mp4" label="test">
-		{% endif %}
-		<p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
-		</video>
+	{% if video.processed %}
+		<div class="video-container">
+			<video id="video" class="video-js vjs-default-skin" controls preload="none" width="670" height="377" poster="{{ video.thumbnail.url }}" data-setup="{}">
+			{% if formats %}
+				{% for format in formats %}
+					<source src="{{ MEDIA_URL }}{{ format.file }}" type="video/mp4" label="{{ format.label }}">
+				{% endfor %}
+			{% else %}
+				<source src="{{ video.file }}" type="video/mp4" label="test">
+			{% endif %}
+			<p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+			</video>
 
-		<script>
-		  videojs('#video').videoJsResolutionSwitcher()
-		</script>
-	</div>
-
-	<div class="video-buttons">
-		<div style="display: flex;">
-			<div class="btn-group">
-				{% if is_video_liked %}
-					<button id="like" class="btn js-action-unlike">Like</button>
-				{% else %}
-					<button id="like" class="btn js-action-like">Like</button>
-				{% endif %}
-
-				{% if is_video_disliked %}
-					<button id="dislike" class="btn js-action-undislike">Dislike</button>
-				{% else %}
-					<button id="dislike" class="btn js-action-dislike">Dislike</button>
-				{% endif %}
-			</div>
-			<button class="btn">Add to</button>
-			<button class="btn">Share</button>
-			<button class="btn">Report</button>
+			<script>
+			  videojs('#video').videoJsResolutionSwitcher();
+			</script>
 		</div>
-		<div style="display: flex; align-items: center;">
-			<div>{{ video.view_count }} views</div>
-			<button class="btn">Stats</button>
-		</div>
-	</div>
 
-	<div style="display: flex; justify-content: space-between;">
-		<div class="video-description-container">
-			<div class="video-uploader-info">
-				Uploaded by <a href="/channel/{{ video.channel.channel_id }}">{{ video.channel.name }}</a> on {{ video.uploaded }}
-			</div>
-			<div class="video-description video-description-collapsed">{{ video.description }}</div>
-		</div>
-		<div>
-			<div>---------------------</div>
-			<div><span id="like_count">{{ like_count }}</span> likes <span id="dislike_count">{{ dislike_count }}</span> dislikes</div>
-		</div>
-	</div>
+		<div class="video-buttons">
+			<div style="display: flex;">
+				<div class="btn-group">
+					{% if is_video_liked %}
+						<button id="like" class="btn js-action-unlike">Like</button>
+					{% else %}
+						<button id="like" class="btn js-action-like">Like</button>
+					{% endif %}
 
-	<div class="video-descriptio-expander js-action-expand"><span>Show more</span></div>
-
-	<div class="comment-form-container">
-		<form id="comment-form" method="post" role="form">
-			{% csrf_token %}
-			<div>
-				<textarea name="text" rows="1" data-min-rows="1" class="autoExpand"></textarea>
-			</div>
-			<input type="hidden" name="video_id" value="{{ video.pk }}">
-			<input type="hidden" name="parent_id" value="{{ comment.pk }}">
-			<button type="submit" class="btn">Comment</button>
-		</form>
-	</div>
-	<div id="comments">
-		{% for comment in comments %}
-			<div class="comment-thread">
-				<div class="comment-container">
-					<div class="comment-body">
-						<div class="comment-content">
-							<div class="comment-text">{{ comment.text }}</div>
-							<div class="comment-meta">
-								<div style="margin-right: 10px;"><a href="/channel/{{ comment.channel.channel_id }}">{{ comment.user.channel.name }}</a></div>
-								<div>{{ comment.created }}</div>
-							</div>
-						</div>
-						<div class="comment-actions">
-								<button>Like</button>
-								<button>Dislike</button>
-								<button onclick="$(this).parent().parent().parent().next().children().eq(0).toggleClass('d-none');">Reply</button>
-						</div>
-					</div>
-					<div class="comment-form-container">
-						<form class="reply-form d-none" method="post" role="form">
-							{% csrf_token %}
-							<div>
-								<textarea name="text" rows="1" data-min-rows="1" class="autoExpand"></textarea>
-							</div>
-							<input type="hidden" name="video_id" value="{{ video.pk }}">
-							<input type="hidden" name="parent_id" value="{{ comment.pk }}">
-							<button type="submit" class="btn">Reply</button>
-						</form>
-					</div>
+					{% if is_video_disliked %}
+						<button id="dislike" class="btn js-action-undislike">Dislike</button>
+					{% else %}
+						<button id="dislike" class="btn js-action-dislike">Dislike</button>
+					{% endif %}
 				</div>
-				<div class="reply-thread">
-					{% for reply in comment.replies.all %}
-						<div style="margin-left: 10px;" class="comment-container">
-							<div class="comment-body">
-								<div class="comment-content">
-									<div class="comment-text">{{ reply.text }}</div>
-									<div class="comment-meta">
-										<div style="margin-right: 10px;"><a href="/channel/{{ reply.channel.channel_id }}">{{ reply.user.channel.name }}</a></div>
-										<div>{{ reply.created }}</div>
-									</div>
+				<button class="btn">Add to</button>
+				<button class="btn">Share</button>
+				<button class="btn">Report</button>
+			</div>
+			<div style="display: flex; align-items: center;">
+				<div>{{ video.view_count }} views</div>
+				<button class="btn">Stats</button>
+			</div>
+		</div>
+
+		<div style="display: flex; justify-content: space-between;">
+			<div class="video-description-container">
+				<div class="video-uploader-info">
+					Uploaded by <a href="/channel/{{ video.channel.channel_id }}">{{ video.channel.name }}</a> on {{ video.uploaded }}
+				</div>
+				<div class="video-description video-description-collapsed">{{ video.description }}</div>
+			</div>
+			<div>
+				<div>---------------------</div>
+				<div><span id="like_count">{{ like_count }}</span> likes <span id="dislike_count">{{ dislike_count }}</span> dislikes</div>
+			</div>
+		</div>
+
+		<div class="video-descriptio-expander js-action-expand"><span>Show more</span></div>
+
+		<div class="comment-form-container">
+			<form id="comment-form" method="post" role="form">
+				{% csrf_token %}
+				<div>
+					<textarea name="text" rows="1" data-min-rows="1" class="autoExpand"></textarea>
+				</div>
+				<input type="hidden" name="video_id" value="{{ video.pk }}">
+				<input type="hidden" name="parent_id" value="{{ comment.pk }}">
+				<button type="submit" class="btn">Comment</button>
+			</form>
+		</div>
+		<div id="comments">
+			{% for comment in comments %}
+				<div class="comment-thread">
+					<div class="comment-container">
+						<div class="comment-body">
+							<div class="comment-content">
+								<div class="comment-text">{{ comment.text }}</div>
+								<div class="comment-meta">
+									<div style="margin-right: 10px;"><a href="/channel/{{ comment.channel.channel_id }}">{{ comment.user.channel.name }}</a></div>
+									<div>{{ comment.created }}</div>
 								</div>
-								<div class="comment-actions">
+							</div>
+							<div class="comment-actions">
 									<button>Like</button>
 									<button>Dislike</button>
 									<button onclick="$(this).parent().parent().parent().next().children().eq(0).toggleClass('d-none');">Reply</button>
-								</div>
 							</div>
 						</div>
-					{% endfor %}
+						<div class="comment-form-container">
+							<form class="reply-form d-none" method="post" role="form">
+								{% csrf_token %}
+								<div>
+									<textarea name="text" rows="1" data-min-rows="1" class="autoExpand"></textarea>
+								</div>
+								<input type="hidden" name="video_id" value="{{ video.pk }}">
+								<input type="hidden" name="parent_id" value="{{ comment.pk }}">
+								<button type="submit" class="btn">Reply</button>
+							</form>
+						</div>
+					</div>
+					<div class="reply-thread">
+						{% for reply in comment.replies.all %}
+							<div style="margin-left: 10px;" class="comment-container">
+								<div class="comment-body">
+									<div class="comment-content">
+										<div class="comment-text">{{ reply.text }}</div>
+										<div class="comment-meta">
+											<div style="margin-right: 10px;"><a href="/channel/{{ reply.channel.channel_id }}">{{ reply.user.channel.name }}</a></div>
+											<div>{{ reply.created }}</div>
+										</div>
+									</div>
+									<div class="comment-actions">
+										<button>Like</button>
+										<button>Dislike</button>
+										<button onclick="$(this).parent().parent().parent().next().children().eq(0).toggleClass('d-none');">Reply</button>
+									</div>
+								</div>
+							</div>
+						{% endfor %}
+					</div>
 				</div>
-			</div>
-		{% endfor %}
-	</div>
+			{% endfor %}
+		</div>
+	{% else %}
+		<div style="
+		padding: 100px;
+	    text-align: center;
+	    background-color: #fff;
+	    border: 1px #3334 solid;
+	    font-size: 1.2em;">
+			We could not find what you are looking for.
+		</div>
+	{% endif %}
 </div>
 <div id="recommended-videos">
 	<ul>
