@@ -4,7 +4,7 @@ Django==3.0.2
 django-appconf==1.0.3
 django-maintenance-mode==0.14.0
 django-rq==2.2.0
-django-video-encoding==0.4.0
+-e git+https://github.com/ajacobsen/django-video-encoding.git@f88b4b296024a2f1dfaadfcfcc3744f36ef5812d#egg=django_video_encoding
 mysqlclient==1.4.6
 Pillow==5.4.1
 python-magic==0.4.15
