@@ -5,10 +5,10 @@ class Config:
 	DATABASES = {
 		'default': {
 			'ENGINE': 'django.db.backends.mysql',
-			'NAME': 'vidhub',
-			'USER': 'vidhub',
-			'PASSWORD': 'sommer',
-			'HOST': '127.0.0.1',
+			'NAME': 'kqsl1y8xgdzqc6vr',
+			'USER': 'c3s3dvgzh10510r2',
+			'PASSWORD': 'hxlievnpt2hu4iw8',
+			'HOST': 'p2d0untihotgr5f6.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
 			'PORT': '3306',
 		}
 	}
